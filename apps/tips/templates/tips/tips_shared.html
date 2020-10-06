@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Shared Tips | {%endblock%}
+{% block content %}
+
+<div class="container">
+    <div class="columns">
+        <div class="column is-12">
+            <table class="table">
+                <thead>
+                    <th>Name</th>
+                    <th>Tips</th>
+                </thead>
+                <tbody>
+                {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.user.username }}</td>
+                        <td>{{ employee.money }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <p><strong>Money left:</strong> {{ rest }}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

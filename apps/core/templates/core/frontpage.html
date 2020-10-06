@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<dev class="container">
+    <dev class="columns">
+        <dev class="column is-12">
+            <h1 class="title">Work, Work, Work!</h1><br>
+            <div class="column is-8">
+                {% if request.user.is_authenticated %}
+                    {% if lazy %}
+                        <h2 class="subtitle is-6">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
+                        <h2 class="subtitle is-3"><strong>Started work | Finished work | Working Time</strong></h2>
+                        {% for date in work_dates %}
+                    <form method="post" action="{% url 'delete_workingtime' %}">
+                        {% csrf_token %}
+                            <h2 class="subtitle is-5" style="margin-bottom: 1%">
+                                <button type="submit" name="delete" value="{{date.pk}}" class="button is-danger">X</button>
+                                {% if not date.done_working %}
+                                    {{date.start_working}} <strong>|</strong> Currently at work
+                                {% else %}
+                                    {{date.start_working}} <strong>|</strong> {{date.end_working}} <strong>|</strong> {{date.worked_time}}
+                            {% endif %}
+                        </h2>
+                    </form>
+                        {{request.user.name}}
+                        {% endfor %}
+                    {% else %}
+                        <h2 class="subtitle"><strong>No data of working time yet!</strong></h2>
+                    {% endif %}
+                {% else %}
+                    <ul>
+                        <li style="list-style-type: decimal"><h2 class="subtitle">Are you forgeting to write your working time?</h2></li>
+                        <li style="list-style-type: decimal"><h2 class="subtitle">Do you hate to make hundreds of pictures of workingplan?</h2></li>
+                        <li style="list-style-type: decimal"><h2 class="subtitle">Or maybe you are writing it on your mobilephone, which you can loose any time.</h2></li>
+                    </ul><br>
+                    <h2 class="subtitle">If your answer for any of that questions was <strong>YES</strong>, that website is for you!<br>
+                    By single press button save your working time!<br>
+                    <strong>Sign up now</strong> and try it for yourself!</h2>
+                {%endif%}
+            </div>
+        </dev>
+    </dev>
+</dev>
+{% endblock %}

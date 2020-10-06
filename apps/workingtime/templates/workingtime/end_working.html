@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Done |{%endblock%}
+{% load humanize %}
+
+{% block content %}
+<div class="container" id="workingapp">
+        <div class="columns">
+            <div class="column is-12">
+                <h1 class="title">You have been working today for {{ worked_time }}</h1>
+                <h2>Enjoy your off day, you deserve it! :)</h2>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

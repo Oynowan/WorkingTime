@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Start |{%endblock%}
+{% load humanize %}
+
+{% block content %}
+    <div class="container" id="workingapp">
+        <div class="columns">
+            <div class="column is-12">
+                    {% if not request.user.userprofile.at_work %}
+                        {% if not request.user.userprofile.worked_today %}
+                <div class="wrapper-form">
+                            <h2 class="subtitle is-3"><strong>
+                                Press the button to start counting your work time!
+                            </strong></h2>
+                            <form method="post" action="{% url 'start_working' %}">
+                                {% csrf_token %}
+                                <label name="button">
+                                    <button class="button is-success" type="submit"><strong>WORK!</strong></button>
+                                </label>
+                            </form>
+                        {% else %}
+                            <h1 class="title">You have been working today! {{ worked_time }}</h1>
+                        {% endif %}
+                </div>
+                    {% elif request.user.userprofile.at_work and not request.user.userprofile.worked_day%}
+                <div class="wrapper-form">
+                         <h1 class="title">You are at work! Have a nice shift!</h1>
+                         <h2 class="subtitle is-4">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
+                        You cant start working again in the same day!</h2>
+                        <form method="post" action="{% url 'end_working' %}">
+                            {% csrf_token %}
+                            <label name="button">
+                                <button class="button is-danger"><strong>WORK!</strong></button>
+                            </label>
+                        </form>
+                        <p>{{ start|naturaltime }}</p>
+                </div>
+                    {% else %}
+                        <div class="columns">
+                            <div class="column is-12">
+                                <h1 class="title">You have been working today for {{ worked_time }}</h1>
+                                <h2 class="subtitle is-3">Enjoy your off day, you deserved it! :)</h2>
+                            </div>
+                        </div>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock script %}

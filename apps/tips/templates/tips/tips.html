@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tips | {% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="columns">
+        <div class="column is-12">
+            <div class="wrapper-form">
+                <table class="table">
+                    <thead>
+                        <th>Name</th>
+                        <th>Points</th>
+                    </thead>
+                    <tbody>
+                        <form method="post" action="{% url 'tips_shared' %}">
+                            {% csrf_token %}
+                            {% for employee in employees %}
+                                <tr>
+                                    <td><label>{{ employee.user.username }}</label></td>
+                                    <td><input type="number" name="points{{employee.id}}" value=0 step=".25" min="0"><br></td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td><br><input type="number" name="money" min="1" value="1">&nbsp;MONEY<br><br>
+                                <input type="submit" class="button is-light" value="SEND"></td>
+                            </tr>
+                        </form>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

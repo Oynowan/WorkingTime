@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block title %}At Work |{% endblock title%}
+{% load humanize %}
+
+{% block content %}
+    <div class="container" id="workingapp">
+        <div class="columns">
+            <div class="column is-12">
+                <div class="wrapper-form">
+                    <h1 class="title">You are at work! Have a nice shift!</h1>
+                    <h2 class="subtitle">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
+                    You cant start working again in the same day!
+                    </h2>
+                    <form method="post" action="{% url 'end_working' %}">
+                        {% csrf_token %}
+                        <label name="button">
+                            <input type="checkbox" name="button" checked hidden="true">
+                            <button class="button is-danger"><strong>WORK!</strong></button>
+                        </label>
+                    </form>
+                    <p>{{ start|naturaltime }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
