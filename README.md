@@ -1,6 +1,8 @@
 # WorkingTime
 Webapplication project for counting working time and more.
 
+###### Application is using mostly Python with Django framework, and a bit of Vuejs.
+
 Application was written as a main purpose for counting working time in my hotel. 
 Since there is not any system for it, just 'a pen and paper' system, i decided to make one.
 
