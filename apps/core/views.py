@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 from ..workingtime.models import WorkingTime
 from .static.scripts import time_count
+from .static.scripts import check_registered
 from ..userprofile.models import UserProfile
 
 from django.http import HttpResponseRedirect
@@ -12,6 +13,8 @@ from django.http import HttpResponseRedirect
 
 def frontpage(request):
     if request.user.is_authenticated:
+        if check_registered(request.user.userprofile):
+            return redirect('user_profile_ui', request.user.username)
         work_dates = WorkingTime.objects.filter(users_time=request.user.userprofile)
     else:
         work_dates = ['AnonymousUser']
@@ -34,8 +37,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-
-            return redirect('frontpage')
+            return redirect('user_profile_ui', user.username)
     else:
         form = UserCreationForm()
 

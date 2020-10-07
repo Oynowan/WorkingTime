@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from .models import WorkingTime
 from django.contrib.auth.models import User
 from ..userprofile.models import UserProfile
-from ..core.static.scripts import time_count
+from ..core.static.scripts import time_count, check_registered
 
 # Create your views here.
 
@@ -18,6 +18,8 @@ def working_2(request):
 
 @login_required()
 def working(request):
+    if check_registered(request.user.userprofile):
+        return redirect('user_profile_ui', request.user.username)
     started = 0
     p = User.objects.get(pk=request.user.id)
     time = p.userprofile.workingtime.first()
@@ -55,11 +57,13 @@ def working(request):
 
 @login_required()
 def start_working(request):
+    if check_registered(request.user.userprofile):
+        return redirect('user_profile_ui', request.user.username)
     p = User.objects.get(pk=request.user.id)
     user = UserProfile.objects.get(user=p)
     time = user.workingtime.first()
     try:
-        if time.end_working != time.start_working and user.at_work is False and time.end_working.day == timezone.now().day or user.at_work is True:
+        if time.end_working != time.start_working and user.at_work is True or user.worked_today is True:
             return render(request, 'core/nope.html')
     except AttributeError:
         pass
@@ -78,6 +82,8 @@ def start_working(request):
 
 @login_required()
 def end_working(request):
+    if check_registered(request.user.userprofile):
+        return redirect('user_profile_ui', request.user.username)
     p = UserProfile.objects.get(user=request.user)
     time = p.workingtime.first()
     if time:

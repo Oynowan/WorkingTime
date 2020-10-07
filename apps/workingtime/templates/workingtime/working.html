@@ -20,7 +20,8 @@
                                 </label>
                             </form>
                         {% else %}
-                            <h1 class="title">You have been working today! {{ worked_time }}</h1>
+                    <h1 class="title">You have been working today!<br> </h1>
+                    <h2 class="subtitle is-5">For {{ worked_time }}</h2>
                         {% endif %}
                 </div>
                     {% elif request.user.userprofile.at_work and not request.user.userprofile.worked_day%}

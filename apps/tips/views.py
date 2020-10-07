@@ -1,21 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from ..userprofile.models import User, UserProfile
 from django.contrib.admin.views.decorators import staff_member_required
+from ..core.static.scripts import check_registered
 # Create your views here.
 
 
 @staff_member_required()
 def views_employees(request):
+    if check_registered(request.user.userprofile):
+        return redirect('user_profile_ui', request.user.username)
     all = UserProfile.objects.all()
     employees = []
     for employee in all:
-        if not employee.user.username == 'admin':
+        print(employee.name)
+        if not employee.user.username == 'admin' and not employee.name == '' and not employee.last_name == '':
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
 
 
 @staff_member_required()
 def tips_shared(request):
+    if check_registered(request.user.userprofile):
+        return redirect('user_profile_ui', request.user.username)
     points = 0
     money = float(request.POST['money'])
     total = 0

@@ -9,12 +9,14 @@
             <table class="table">
                 <thead>
                     <th>Name</th>
+                    <th>Last Name</th>
                     <th>Tips</th>
                 </thead>
                 <tbody>
                 {% for employee in employees %}
                     <tr>
-                        <td>{{ employee.user.username }}</td>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.last_name }}</td>
                         <td>{{ employee.money }}</td>
                     </tr>
                 {% endfor %}

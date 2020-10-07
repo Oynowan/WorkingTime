@@ -1,7 +1,7 @@
+from django.shortcuts import redirect
+
 
 # Counts working time and converts to hours/minutes
-
-
 def time_count(time):
     min = time
     hour = 0
@@ -14,3 +14,6 @@ def time_count(time):
         return f'{min}min'
 
 
+# Checks if user completed registration
+def check_registered(user):
+    return user.name == '' or user.last_name == ''

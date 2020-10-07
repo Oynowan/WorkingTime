@@ -10,6 +10,7 @@
                 <table class="table">
                     <thead>
                         <th>Name</th>
+                        <th>Last Name</th>
                         <th>Points</th>
                     </thead>
                     <tbody>
@@ -17,11 +18,10 @@
                             {% csrf_token %}
                             {% for employee in employees %}
                                 <tr>
-                                    <td><label>{{ employee.user.username }}</label></td>
+                                    <td><label>{{ employee.name }}</label></td>
+                                    <td><label>{{ employee.last_name }}</label></td>
                                     <td><input type="number" name="points{{employee.id}}" value=0 step=".25" min="0"><br></td>
-                                </tr>
                             {% endfor %}
-                            <tr>
                                 <td><br><input type="number" name="money" min="1" value="1">&nbsp;MONEY<br><br>
                                 <input type="submit" class="button is-light" value="SEND"></td>
                             </tr>

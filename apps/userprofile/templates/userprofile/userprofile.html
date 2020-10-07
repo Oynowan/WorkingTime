@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<h1 class="title">Profile {{ user }}</h1><br>
+{% if user_profile.name == '' %}
+    <h2 class="subtitle" style="color: red">Please fill up the required fields</h2>
+{% endif %}
+<div class="form-wrapper" id="profile_">
+    <form method="post" v-on:submit.prevent="saveChanges()">
+        <h2 class="subtitle is-5">Name:&nbsp;
+            <input typeof="text" v-model="name" v-bind:style="{border: styleColorName}"></h2>
+        <h2 class="subtitle is-5">Lastname:&nbsp;
+            <input typeof="text" v-model="last_name" v-bind:style="{border: styleColorLastName}"></h2>
+        <h2 class="subtitle is-5">Age:&nbsp;
+            <input typeof="text" v-model="age"></h2>
+        <h2 class="subtitle is-5">Email:&nbsp;
+            <input typeof="text" v-model="email">
+        <label v-show="errorEmail" style="color: red">Wrong Email or already exist in database!</label></h2>
+        <h2 class="subtitle is-5">Last tip: {{user_profile.money}}&#8364;</h2>
+        <button class="button is-light">Save</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new Vue ({
+        el:'#profile_',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                name: '{{ user_profile.name }}',
+                last_name: '{{ user_profile.last_name}}',
+                age: '{{ user_profile.age }}',
+                email: '{{ user_profile.email }}',
+                regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                wrongEmail: false
+            }
+        },
+
+        computed: {
+            errorEmail: function() {
+                if (this.wrongEmail) {
+                    return this.wrongEmail
+                }
+                return !this.regex.test(this.email)
+            },
+            styleColorName: function () {
+                if (this.name === '') {
+                    return 'solid 1px red'
+                }
+            },
+            styleColorLastName: function () {
+                if (this.last_name === '') {
+                    return 'solid 1px red'
+                }
+            }
+        },
+
+        methods: {
+            saveChanges: function () {
+                if (this.name==='{{ user_profile.name }}' && this.last_name==='{{user_profile.last_name}}' &&
+                this.age ==='{{user_profile.age}}' && this.email === '{{user_profile.email}}') {
+                    console.log('You didnt change anything')
+                } else if (this.regex.test(this.email) === false) {
+                    console.log('Wrong email address!')
+                } else{
+                    var profile = {
+                        'name': this.name,
+                        'last_name': this.last_name,
+                        'age': this.age,
+                        'email': this.email
+                    };
+                    fetch('/api/save_profile_changes/', {
+                        method: 'POST',
+                        headers: {
+                            'ContentType': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(profile)
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        this.wrongEmail = data['email']
+                        console.log(data)
+                    })
+                }
+            }
+        }
+    })
+</script>
+{% endblock %}

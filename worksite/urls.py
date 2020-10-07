@@ -22,15 +22,23 @@ from apps.core.views import frontpage, signup, delete_workingtime
 from apps.workingtime.views import working, start_working, end_working, working_2
 from apps.tips.views import views_employees, tips_shared
 from apps.workingtime.api import api_start_working, api_end_working
+from apps.userprofile.views import user_profile_ui
+from apps.userprofile.api import api_save_profile_changes
 
 urlpatterns = [
 
+    #
+    #
+    # Core app
     path('', frontpage, name='frontpage'),
     path('signup/', signup, name='signup'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('login/', views.LoginView.as_view(template_name='core/login.html'), name='login'),
     path('deleted/', delete_workingtime, name='delete_workingtime'),
 
+    #
+    #
+    # WorkingTime APP
 
     path('working/', working, name='working'),
     #path('working_2/', working_2, name='working_2'),
@@ -38,14 +46,28 @@ urlpatterns = [
     path('workingtime/end_working/', end_working, name='end_working'),
 
     #
-    # API
+    #
+    # API WorkingTime app
 
     #path('api/start_working/', api_start_working, name='api_start_working'),
     #path('api/end_working/', api_end_working, name='api_end_working'),
+    path('api/save_profile_changes/', api_save_profile_changes, name='api_save_profile_changes'),
 
+    #
+    #
+    # Tips APP
 
     path('tips/', views_employees, name='views_employees'),
     path('tips/tips_shared/', tips_shared, name='tips_shared'),
 
+    #
+    #
+    # UserProfile
+
+    path('profile/<str:user>/', user_profile_ui, name='user_profile_ui'),
+
+    #
+    #
+    # Admin
     path('admin/', admin.site.urls),
 ]
