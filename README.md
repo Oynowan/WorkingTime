@@ -35,9 +35,13 @@ In the moment of creating new account you are redirected to profile page to assi
 Without it you can't go anywhere, you will be always redirected here. It's needed for a Tips app which is using names and last_names of the users.
 - User can now change a password in Userprofile.
 ### Coming Soon:
-- [ ] List of departments in the hotel 
+- [x] List of departments in the hotel 
 - [x] UI for userprofile to change/add options like:
   - [x] Gender
   - [x] Age
-  - [ ] Department
+  - [x] Department
   - [x] Email
+- [ ] Sorting on the frontpage for a working dates, last 7days, 30days and all
+- [ ] Staff members can see all dates of employees and approve them
+- [ ] By tisps sharing staff member can choose for which department wants to share
+        them. Only employees with choosen department are listed
