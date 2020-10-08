@@ -2,47 +2,67 @@
 
 {% block content %}
 
-<h1 class="title">Profile {{ user }}</h1><br>
-{% if user_profile.name == '' %}
-    <h2 class="subtitle" style="color: red">Please fill up the required fields</h2>
-{% endif %}
-<!-- Changing Datas form -->
-<div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
-    <form method="post" v-on:submit.prevent="saveChanges()">
-        <h2 class="subtitle is-5">Name:&nbsp;
-            <input typeof="text" v-model="name" v-bind:style="{border: styleColorName}"></h2>
-        <h2 class="subtitle is-5">Lastname:&nbsp;
-            <input typeof="text" v-model="last_name" v-bind:style="{border: styleColorLastName}"></h2>
-        <h2 class="subtitle is-5">Age:&nbsp;
-            <input typeof="text" v-model="age"></h2>
-        <h2 class="subtitle is-5">Email:&nbsp;
-            <input typeof="text" v-model="email">
-        <label v-show="errorEmail" style="color: red">Wrong Email or already exist in database!</label></h2>
-        <h2 class="subtitle is-5">Last tip: {{user_profile.money}}&#8364;</h2>
-        <button class="button is-light">Save</button>
-    </form>
-</div>
-<!-- Cahnging password form -->
-    <div class="form-wrapper" id="password_wrapper">
-        <button class="button is-dark" @click="seen = !seen">Change Password</button>
-
-        <!-- Message of changing password, successful or unsuccessful -->
-        {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-
-        <div v-show="seen">
-            <form method="post" action=".">
-                {% csrf_token %}
-                {{ change_password.as_p }}
-                <button class="button is-light" type="submit">Set new password</button>
-            </form>
+<div class="container">
+    <div class="columns">
+        <div class="column is-12">
+            <h1 class="title">{{ user }}s profile</h1><br>
+            {% if user_profile.name == '' %}
+                <h2 class="subtitle" style="color: red">Please fill up the required fields</h2>
+            {% endif %}
+                <!-- Changing Datas form -->
+            <div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
+                <form method="post" v-on:submit.prevent="saveChanges()">
+                    <h2 class="subtitle is-5">Name:&nbsp;
+                        <input class="input" style="width: 10rem" typeof="text" v-model="name" v-bind:style="{border: styleColorName}" placeholder="Name"></h2>
+                    <h2 class="subtitle is-5">Lastname:&nbsp;
+                        <input class="input" style="width: 10rem" typeof="text" v-model="last_name" v-bind:style="{border: styleColorLastName}" placeholder="Last Name"></h2>
+                    <h2 class="subtitle is-5">Department:&nbsp;
+                        <div v-show="show_department" style="display: inline">
+                            <div class="select">
+                                <select class="select" style="width: 10rem; height: 3rem" v-model="department" v-bind:style="{border: styleColorDepartment}">
+                                    {% for department, index in user_profile.department_choices %}
+                                        <option>{{ index }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: inline" v-show="!show_department">{{ user_profile.department}}</div></h2>
+                    <h2 class="subtitle is-5">Age:&nbsp;
+                        <input class="input" style="width: 10rem" typeof="text" v-model="age"></h2>
+                    <h2 class="subtitle is-5">Email:&nbsp;
+                        <input class="input" style="width: 10rem" typeof="text" v-model="email" v-bind:style="{border: styleColorEmail}" placeholder="Email">
+                    <!--<label v-show="errorEmail" style="color: red">Wrong Email or already exist in database!</label>--></h2>
+                    <h2 class="subtitle is-5">Last tip: {{user_profile.money}}&#8364;</h2>
+                    <button class="button is-light"><strong>Save</strong></button>
+                </form>
+            </div>
+            <!-- Changing password form -->
+            <div class="form-wrapper" id="password_wrapper">
+                <button class="button is-dark" @click="seen = !seen">Change Password</button>
+                <!-- Message of changing password, successful or unsuccessful -->
+                {% if messages %}
+                    <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <div v-show="seen">
+                    <form method="post" action=".">
+                        {% csrf_token %}
+                        {{ change_password.as_p }}
+                        <button class="button is-light" type="submit">Set new password</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+
+
+
+
 {% endblock %}
 
 {% block script %}
@@ -67,6 +87,8 @@
                 email: '{{ user_profile.email }}',
                 regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                 wrongEmail: false,
+                department: '{{ user_profile.department }}',
+                show_department: '{{ user_profile.department }}' === 'unknown'
             }
         },
 
@@ -86,14 +108,25 @@
                 if (this.last_name === '') {
                     return 'solid 1px red'
                 }
+            },
+            styleColorDepartment: function () {
+                if (this.show_department) {
+                    return 'solid 1px red'
+                }
+            },
+            styleColorEmail: function () {
+                if (this.regex.test(this.email) === false) {
+                    return 'solid 1px red'
+                }
             }
         },
 
         methods: {
             saveChanges: function () {
                 if (this.name==='{{ user_profile.name }}' && this.last_name==='{{user_profile.last_name}}' &&
-                this.age ==='{{user_profile.age}}' && this.email === '{{user_profile.email}}') {
+                this.age ==='{{user_profile.age}}' && this.email === '{{user_profile.email}}' && !this.show_department) {
                     console.log('You didnt change anything')
+                    console.log(this.department)
                 } else if (this.regex.test(this.email) === false) {
                     console.log('Wrong email address!')
                 } else{
@@ -101,7 +134,8 @@
                         'name': this.name,
                         'last_name': this.last_name,
                         'age': this.age,
-                        'email': this.email
+                        'email': this.email,
+                        'department': this.department
                     };
                     fetch('/api/save_profile_changes/', {
                         method: 'POST',

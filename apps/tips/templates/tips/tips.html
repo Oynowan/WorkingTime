@@ -7,27 +7,32 @@
     <div class="columns">
         <div class="column is-12">
             <div class="wrapper-form">
-                <table class="table">
-                    <thead>
-                        <th>Name</th>
-                        <th>Last Name</th>
-                        <th>Points</th>
-                    </thead>
-                    <tbody>
-                        <form method="post" action="{% url 'tips_shared' %}">
+                <form method="post" action="{% url 'tips_shared' %}">
+                    <table class="table" style="background: #f7f1e3" >
+                        <thead>
+                            <th>Name</th>
+                            <th>Last Name</th>
+                            <th>Points</th>
+                        </thead>
+                        <tbody>
                             {% csrf_token %}
                             {% for employee in employees %}
                                 <tr>
                                     <td><label>{{ employee.name }}</label></td>
                                     <td><label>{{ employee.last_name }}</label></td>
-                                    <td><input type="number" name="points{{employee.id}}" value=0 step=".25" min="0"><br></td>
+                                    <td><input class="input" style="width: 10rem;" class="input_bar"
+                                               type="number" name="points{{employee.id}}" value=0 step=".25" min="0">
+                                        <br>
+                                    </td>
+                                </tr>
                             {% endfor %}
-                                <td><br><input type="number" name="money" min="1" value="1">&nbsp;MONEY<br><br>
-                                <input type="submit" class="button is-light" value="SEND"></td>
-                            </tr>
-                        </form>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                    <div style="text-align: left">
+                    <p>Total tips</p>
+                    <input class="input" style="width: 10rem;" type="number" name="money" min="1" value="1"></div><br><br>
+                    <input type="submit" class="button is-success" value="SEND">
+                </form>
             </div>
         </div>
     </div>

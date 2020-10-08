@@ -12,6 +12,19 @@ class UserProfile(models.Model):
     age = models.IntegerField(blank=True, null=True, default=0)
     email = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
+    # Departments
+
+    department_choices = (
+        ('unknown','unknown'),
+        ('F&B - Restaurant - BFST', 'F&B - Restaurant - BFST'),
+        ('F&B - Restaurant - Evening', 'F&B - Restaurant - Evening'),
+        ('F&B - RoomService - Morning', 'F&B - RoomService - Morning'),
+        ('F&B - RoomService - Evening', 'F&B - RoomService - Evening'),
+        ('F&B - Banket - Morning', 'F&B - Banket - Morning'),
+        ('F&B - Banket - Evening', 'F&B - Banket - Evening'),
+    )
+    department = models.CharField(max_length=100, choices=department_choices, default='unknown')
+
     # Variables for tips app
     points = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     money = models.DecimalField(default=0, max_digits=100, decimal_places=2)

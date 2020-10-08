@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    color: hsl(0, 0%, 21%);
+    background: #f7f1e3;
+    font-family: 'Playfair', serif;
+    font-size: 15px;
+    font-weight: 300;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+}
+
+.input_bar {
+    width: 100%;
+}

@@ -11,7 +11,7 @@
                         {% if not request.user.userprofile.worked_today %}
                 <div class="wrapper-form">
                             <h2 class="subtitle is-3"><strong>
-                                Press the button to start counting your work time!
+                                Press the button<br>to start counting<br>your work time!
                             </strong></h2>
                             <form method="post" action="{% url 'start_working' %}">
                                 {% csrf_token %}
@@ -28,7 +28,7 @@
                 <div class="wrapper-form">
                          <h1 class="title">You are at work! Have a nice shift!</h1>
                          <h2 class="subtitle is-4">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
-                        You cant start working again in the same day!</h2>
+                        You can't start working again in the same day!</h2>
                         <form method="post" action="{% url 'end_working' %}">
                             {% csrf_token %}
                             <label name="button">

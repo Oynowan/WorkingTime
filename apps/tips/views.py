@@ -12,7 +12,6 @@ def views_employees(request):
     all = UserProfile.objects.all()
     employees = []
     for employee in all:
-        print(employee.name)
         if not employee.user.username == 'admin' and not employee.name == '' and not employee.last_name == '':
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
@@ -35,10 +34,10 @@ def tips_shared(request):
         avg_money = money / points
     else:
         avg_money = 0
-    employees= UserProfile.objects.all()
+    employees = UserProfile.objects.all()
     list_of_employees = []
     for employee in employees:
-        if not employee.user.username == 'admin':
+        if not employee.user.username == 'admin' and not employee.name == '' and not employee.last_name == '':
             list_of_employees.append(employee)
             employee.money = round(float(employee.points) * avg_money, 0)
             employee.points = 0

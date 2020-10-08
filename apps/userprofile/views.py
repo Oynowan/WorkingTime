@@ -11,6 +11,9 @@ from django.contrib import messages
 def user_profile_ui(request, user):
     user_u = User.objects.get(username=user)
     change_password = PasswordChangeForm(user_u)
+    department_choices = user_u.userprofile.department_choices
+    for department_choice in department_choices:
+        print(department_choice[1])
     if user != request.user.username:
         return redirect('frontpage')
     context = {

@@ -11,6 +11,7 @@ def api_save_profile_changes(request):
     user = UserProfile.objects.get(user=request.user)
     user.name = body['name']
     user.last_name = body['last_name']
+    user.department = body['department']
     email = UserProfile.objects.filter(email=body['email'])
     if len(email) > 0 and email[0].user.pk != user.user.pk:
         wrong_email = True

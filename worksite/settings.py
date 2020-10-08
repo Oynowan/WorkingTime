@@ -25,7 +25,7 @@ SECRET_KEY = '$q!$%cafkib*biw5d7uxm4aj#aw3lt6xz4pr_vg$afrh$832gd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'frontpage'

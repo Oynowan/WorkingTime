@@ -16,4 +16,4 @@ def time_count(time):
 
 # Checks if user completed registration
 def check_registered(user):
-    return user.name == '' or user.last_name == ''
+    return user.name == '' or user.last_name == '' or user.department == 'unknown'
