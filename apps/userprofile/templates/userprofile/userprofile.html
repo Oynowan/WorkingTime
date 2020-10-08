@@ -6,7 +6,8 @@
 {% if user_profile.name == '' %}
     <h2 class="subtitle" style="color: red">Please fill up the required fields</h2>
 {% endif %}
-<div class="form-wrapper" id="profile_">
+<!-- Changing Datas form -->
+<div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
     <form method="post" v-on:submit.prevent="saveChanges()">
         <h2 class="subtitle is-5">Name:&nbsp;
             <input typeof="text" v-model="name" v-bind:style="{border: styleColorName}"></h2>
@@ -21,10 +22,40 @@
         <button class="button is-light">Save</button>
     </form>
 </div>
+<!-- Cahnging password form -->
+    <div class="form-wrapper" id="password_wrapper">
+        <button class="button is-dark" @click="seen = !seen">Change Password</button>
+
+        <!-- Message of changing password, successful or unsuccessful -->
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div v-show="seen">
+            <form method="post" action=".">
+                {% csrf_token %}
+                {{ change_password.as_p }}
+                <button class="button is-light" type="submit">Set new password</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
 <script>
+    new Vue ({
+        el: '#password_wrapper',
+        delimiters: ['[[', ']]'],
+        data () {
+            return {
+                seen: false
+            }
+        },
+    });
     new Vue ({
         el:'#profile_',
         delimiters: ['[[',']]'],
@@ -35,7 +66,7 @@
                 age: '{{ user_profile.age }}',
                 email: '{{ user_profile.email }}',
                 regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                wrongEmail: false
+                wrongEmail: false,
             }
         },
 
@@ -83,8 +114,7 @@
                     })
                     .then((response) => response.json())
                     .then((data) => {
-                        this.wrongEmail = data['email']
-                        console.log(data)
+                        this.wrongEmail = data['email'];
                     })
                 }
             }

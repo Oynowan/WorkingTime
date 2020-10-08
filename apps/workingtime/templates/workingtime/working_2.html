@@ -48,7 +48,7 @@
                 color_danger: this.at_work,
                 color: !this.color_danger
             }
-            },
+        },
 
         methods: {
             sendToWork: function () {
@@ -64,8 +64,9 @@
                         credentials: 'same-origin',
                         body: JSON.stringify(user)
                     })
-                    .then((response) => {
-                        console.log(response)
+                    .then((response) => response.json())
+                        .then((data) => {
+                            console.log(data)
                     })
                     .catch((error) => {
                         console.log(error)
