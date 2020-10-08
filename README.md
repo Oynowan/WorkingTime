@@ -33,7 +33,7 @@ Then a quotient is multiplied by points of every single employee.
 Created user profile, where you can assign your name, last_name, age and email address(unique) to your profile.
 In the moment of creating new account you are redirected to profile page to assign required fields(name, last_name). Same when you delete your name or last_name.
 Without it you can't go anywhere, you will be always redirected here. It's needed for a Tips app which is using names and last_names of the users
-
+User can now change a password in Userprofile.
 ### Coming Soon:
 - [ ] List of departments in the hotel 
 - [x] UI for userprofile to change/add options like:
