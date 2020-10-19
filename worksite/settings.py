@@ -51,7 +51,6 @@ INSTALLED_APPS = [
 
     # Other
     'rest_framework',
-    'npm_mjs',
     
     # My apps
 
