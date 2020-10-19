@@ -13,9 +13,12 @@
                     {% if lazy %}
                         <h2 class="subtitle is-5">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
                             <div></div>
-                            <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Waiting for approve/still at work</div>
-                            <div style="background: hsl(141, 53%, 53%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Confirmed by Supervisor</div>
-                            <div style="background: hsl(348, 100%, 61%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Corrected by supervisor</div>
+                            <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
+                                Waiting for approve/still at work</div>
+                            <div style="background: hsl(141, 53%, 53%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
+                                Confirmed by Supervisor</div>
+                            <div style="background: hsl(348, 100%, 61%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
+                                Corrected by supervisor</div>
                             <span style="display: inline-block"></span>
                             <div id="get_time">
                                 <div v-for="time in times" v-if="time.owner === '{{request.user.username}}'">
