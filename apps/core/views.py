@@ -17,7 +17,7 @@ def frontpage(request):
     else:
         work_dates = ['AnonymousUser']
     try:
-        if work_dates[0]:
+        if not work_dates:
             lazy = True
     except IndexError:
         lazy = False
