@@ -1,0 +1,31 @@
+{
+  "name": "worksite",
+  "version": "0.1.0",
+  "description": "Project for workingtime at hotel",
+  "main": "index.js",
+  "dependencies": {
+    "noty": "^3.2.0-beta",
+    "vue": "^2.6.12",
+    "vuejs-noty": "^0.1.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "console.log('test')"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oynowan/WorkingTime.git"
+  },
+  "keywords": [
+    "workingtime",
+    "work",
+    "time",
+    "working"
+  ],
+  "author": "Kamil Staniszewski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Oynowan/WorkingTime/issues"
+  },
+  "homepage": "https://github.com/Oynowan/WorkingTime#readme"
+}

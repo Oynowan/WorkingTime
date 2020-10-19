@@ -6,9 +6,10 @@
 <div class="container">
     <div class="columns">
         <div class="column is-12">
-            <div class="wrapper-form">
+            <div class="form-wrapper">
                 <form method="post" action="{% url 'tips_shared' %}">
-                    <table class="table" style="background: #f7f1e3" >
+                    <h2 class="subtitle is-3">{{request.user.userprofile.department}}</h2>
+                    <table class="table" style="background: #f5f5f5" >
                         <thead>
                             <th>Name</th>
                             <th>Last Name</th>
@@ -20,7 +21,7 @@
                                 <tr>
                                     <td><label>{{ employee.name }}</label></td>
                                     <td><label>{{ employee.last_name }}</label></td>
-                                    <td><input class="input" style="width: 10rem;" class="input_bar"
+                                    <td><input class="input" style="width: 8rem;" class="input_bar"
                                                type="number" name="points{{employee.id}}" value=0 step=".25" min="0">
                                         <br>
                                     </td>

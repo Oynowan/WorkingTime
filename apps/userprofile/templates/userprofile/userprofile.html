@@ -1,44 +1,103 @@
 {% extends 'core/base.html' %}
-
+{% block title %}
+Profile |
+{% endblock %}
 {% block content %}
 
 <div class="container">
     <div class="columns">
         <div class="column is-12">
-            <h1 class="title">{{ user }}s profile</h1><br>
-            {% if user_profile.name == '' %}
-                <h2 class="subtitle" style="color: red">Please fill up the required fields</h2>
-            {% endif %}
                 <!-- Changing Datas form -->
             <div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
+                <h1 class="title">{{ user }}s profile</h1><br>
                 <form method="post" v-on:submit.prevent="saveChanges()">
-                    <h2 class="subtitle is-5">Name:&nbsp;
-                        <input class="input" style="width: 10rem" typeof="text" v-model="name" v-bind:style="{border: styleColorName}" placeholder="Name"></h2>
-                    <h2 class="subtitle is-5">Lastname:&nbsp;
-                        <input class="input" style="width: 10rem" typeof="text" v-model="last_name" v-bind:style="{border: styleColorLastName}" placeholder="Last Name"></h2>
-                    <h2 class="subtitle is-5">Department:&nbsp;
-                        <div v-show="show_department" style="display: inline">
-                            <div class="select">
-                                <select class="select" style="width: 10rem; height: 3rem" v-model="department" v-bind:style="{border: styleColorDepartment}">
-                                    {% for department, index in user_profile.department_choices %}
-                                        <option>{{ index }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div style="display: inline" v-show="!show_department">{{ user_profile.department}}</div></h2>
-                    <h2 class="subtitle is-5">Age:&nbsp;
-                        <input class="input" style="width: 10rem" typeof="text" v-model="age"></h2>
-                    <h2 class="subtitle is-5">Email:&nbsp;
-                        <input class="input" style="width: 10rem" typeof="text" v-model="email" v-bind:style="{border: styleColorEmail}" placeholder="Email">
-                    <!--<label v-show="errorEmail" style="color: red">Wrong Email or already exist in database!</label>--></h2>
-                    <h2 class="subtitle is-5">Last tip: {{user_profile.money}}&#8364;</h2>
-                    <button class="button is-light"><strong>Save</strong></button>
+                    <table class="table" id="profile_table" style="background: #f5f5f5;">
+                    <thead>
+                        <th></th>
+                        <th>{% if user_profile.name == '' or user_profile.last_name == '' or user_profile.department == 'Unspecify' %}
+                                <h2 class="subtitle" style="color: red">Fill up the required fields</h2>
+                            {% endif %}
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% if request.user.userprofile.supervisor %}
+                                <td><h2 class="subtitle is-5"><strong>Check if employee:</strong>&nbsp;</h2></td>
+                                <td><input type="checkbox" v-model="confirmed"></td>
+                            {% else %}
+                                <td><h2 class="subtitle is-5"><strong>Employee:</strong>&nbsp;</h2></td>
+                                {% if user_profile.confirmed_employee %}
+                                    <td><h2 class="subtitle" style="color: green">Is confirmed</h2></td>
+                                {% else %}
+                                    <td><h2 class="subtitle" style="color: red">Waiting for confirmation</h2></td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td><h2 class="subtitle is-5"><strong>Name:</strong>&nbsp;</h2></td>
+                            {% if user_profile.name == '' or request.user.userprofile.supervisor %}
+                            <td><input class="input" style="width: 10rem" typeof="text" v-model="name"
+                                       v-bind:style="{border: styleColorName}" placeholder="Name"></td>
+                            {% else %}
+                            <td>{{user_profile.name}}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td><h2 class="subtitle is-5"><strong>Lastname:</strong>&nbsp;</h2></td>
+                            {% if user_profile.name == '' or request.user.userprofile.supervisor %}
+                            <td><input class="input" style="width: 10rem" typeof="text" v-model="last_name"
+                                   v-bind:style="{border: styleColorLastName}" placeholder="Last Name"></td>
+                            {% else %}
+                            <td>{{ user_profile.last_name }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td><h2 class="subtitle is-5"><strong>Department:</strong>&nbsp;</h2></td>
+                            {% if user_profile.department == 'Unspecify' or request.user.userprofile.supervisor %}
+                            <td><div v-show="show_department || '{{request.user.userprofile.supervisor}}' === 'True'" style="display: inline">
+                                    <div class="select">
+                                        <select style="width: 10rem; height: 3rem" v-model="department" v-bind:style="{border: styleColorDepartment}">
+                                            {% for department, index in user_profile.department_choices %}
+                                                <option>{{ index }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </td>
+                            {% else %}
+                            <td>{{user_profile.department}}</td>
+                            {% endif %}
+                        </tr>
+                    <tr>
+                        <td><h2 class="subtitle is-5"><strong>Age:</strong>&nbsp;</h2></td>
+                        <td><input class="input" style="width: 10rem" typeof="text" v-model="age"></td>
+                    </tr>
+                    <tr>
+                        <td><h2 class="subtitle is-5"><strong>Email:</strong>&nbsp;</h2></td>
+                        <td><input class="input" style="width: 10rem" typeof="text" v-model="email"
+                               v-bind:style="{border: styleColorEmail}" placeholder="Email">
+                        <label v-show="wrongEmail" style="color: red">Wrong Email or already exist in database!</label></td>
+                    </tr>
+                        {% if user_profile.user == request.user %}
+                    <tr>
+                        <td>
+                            <h2 class="subtitle is-5"><strong>Last tip:</strong></h2>
+                        </td>
+                        <td><h2>{{user_profile.money}}&#8364;</h2></td>
+                    </tr>
+                     {% endif %}
+                    </tbody>
+                    </table>
+                    <button class="button is-dark"><strong>Save</strong></button>
                 </form>
             </div>
+            {% if user_profile.user == request.user %}
             <!-- Changing password form -->
             <div class="form-wrapper" id="password_wrapper">
-                <button class="button is-dark" @click="seen = !seen">Change Password</button>
+                <div>
+                <button class="button is-dark" @click="seen = !seen"><strong>Change Password</strong></button>
+                </div>
                 <!-- Message of changing password, successful or unsuccessful -->
                 {% if messages %}
                     <ul class="messages">
@@ -51,10 +110,94 @@
                     <form method="post" action=".">
                         {% csrf_token %}
                         {{ change_password.as_p }}
-                        <button class="button is-light" type="submit">Set new password</button>
+                        <button class="button is-dark" type="submit"><strong>Set new password</strong></button>
                     </form>
                 </div>
             </div>
+            {% endif %}
+             {% if request.user.userprofile.supervisor %}
+                <div id="users-times">
+                    <div>
+                    <button style="float: right" class="button is-dark" @click="seen = !seen"><strong>Times</strong></button>
+                    </div>
+                    <span style="display: inline-block; height: 3rem"></span>
+                    <div v-show="seen">
+                    <div v-for="time in times" v-if="time.owner === '{{user_profile.user.username}}'">
+                        <span class="span-row"></span>
+                        <div class="table-row">
+                            <div class="table-column" style="width: 18rem">
+                                [[time.start_working]]
+                            </div>
+                            <div class="table-column" v-if="!time.done_working" style="width: 18rem">
+                                Currently at work
+                            </div>
+                            <div class="table-column" v-else style="width: 18rem">
+                                [[time.end_working]]
+                            </div>
+                            <div class="table-column" style="width: 8rem; text-align: right">
+                                [[time.worked_time]]
+                            </div>
+                            <div class="table-column_bulma">
+                                <div class="dropdown is-hoverable">
+                                    <div class="dropdown-trigger">
+                                        <div v-if="time.checked_by_supervisor">
+                                            <div v-if="time.is_approved_by_supervisor" style="width: 8rem">
+                                                <button class="button is-success" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                                    <span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span>
+                                                </button>
+                                                </div>
+                                                <div v-else style="width: 8rem">
+                                                    <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                        <ion-icon name="close-outline"></ion-icon>
+                                                        <span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div v-else style="width: 8rem">
+                                                <button class="button is-warning" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span></button>
+                                            </div>
+                                              </div>
+                                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                                <div class="dropdown-content">
+                                                  <div v-if="time.corrected" class="dropdown-item">
+                                                    [[time.corrected_by]]
+                                                  </div>
+                                                  <div v-if="time.corrected" class="dropdown-item is-active">
+                                                    [[time.corrected_at]]
+                                                  </div>
+                                                  <hr class="dropdown-divider">
+                                                  <div id="frontpage-link" class="dropdown-item">
+                                                      <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
+                                                      <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
+                                                  </a>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-row" v-if="time.corrected" style="color: red">
+                                        <div class="table-column" style="width: 18rem">
+                                            [[time.start_working_corrected]]
+                                        </div>
+                                        <div class="table-column" style="width: 18rem">
+                                            [[time.end_working_corrected]]
+                                        </div>
+                                        <div class="table-column" style="width: 8rem; text-align: right">
+                                            [[time.worked_time_corrected]]
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -67,6 +210,37 @@
 
 {% block script %}
 <script>
+
+    new Vue ({
+       el: '#users-times',
+       delimiters: ['[[',']]'],
+       data () {
+           return {
+               times: '',
+               seen: false
+           }
+       },
+        mounted () {
+           this.getTimes()
+        },
+        methods: {
+           getTimes: function () {
+                axios.get('/api/workingtime/')
+                .then(response => {
+                    this.times = response.data
+                })
+            },
+            delTime: function (id) {
+                axios.delete('/api/workingtime/'+id+'/',{
+                    headers: {
+                        'ContentType': 'application/json',
+                        'X-CSRFToken': '{{csrf_token}}'
+                    },
+                })
+                .then(response => this.getTimes())
+            }
+        }
+    });
     new Vue ({
         el: '#password_wrapper',
         delimiters: ['[[', ']]'],
@@ -81,14 +255,16 @@
         delimiters: ['[[',']]'],
         data () {
             return {
+                user: '{{ user }}',
                 name: '{{ user_profile.name }}',
                 last_name: '{{ user_profile.last_name}}',
                 age: '{{ user_profile.age }}',
                 email: '{{ user_profile.email }}',
-                regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/,
                 wrongEmail: false,
                 department: '{{ user_profile.department }}',
-                show_department: '{{ user_profile.department }}' === 'unknown'
+                show_department: '{{ user_profile.department }}' === 'Unspecify',
+                confirmed: '{{ user_profile.confirmed_employee }}' === 'True',
             }
         },
 
@@ -123,36 +299,37 @@
 
         methods: {
             saveChanges: function () {
-                if (this.name==='{{ user_profile.name }}' && this.last_name==='{{user_profile.last_name}}' &&
-                this.age ==='{{user_profile.age}}' && this.email === '{{user_profile.email}}' && !this.show_department) {
-                    console.log('You didnt change anything')
-                    console.log(this.department)
-                } else if (this.regex.test(this.email) === false) {
-                    console.log('Wrong email address!')
-                } else{
-                    var profile = {
-                        'name': this.name,
-                        'last_name': this.last_name,
-                        'age': this.age,
-                        'email': this.email,
-                        'department': this.department
-                    };
-                    fetch('/api/save_profile_changes/', {
-                        method: 'POST',
-                        headers: {
-                            'ContentType': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        credentials: 'same-origin',
-                        body: JSON.stringify(profile)
-                    })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        this.wrongEmail = data['email'];
-                    })
+                    if (this.name === '{{ user_profile.name }}' && this.last_name === '{{user_profile.last_name}}' &&
+                        this.age === '{{user_profile.age}}' && this.email === '{{user_profile.email}}' &&
+                        !this.show_department && this.confirmed === '{{ user_profile.confirmed_employee}}') {
+                        console.log('You didnt change anything');
+                        console.log(this.department)
+                    } else {
+                        var profile = {
+                            'user': this.user,
+                            'name': this.name,
+                            'last_name': this.last_name,
+                            'age': this.age,
+                            'email': this.email,
+                            'department': this.department,
+                            'confirmed': this.confirmed
+                        };
+                        fetch('/api/save_profile_changes/', {
+                            method: 'POST',
+                            headers: {
+                                'ContentType': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(profile)
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                this.wrongEmail = data['email'];
+                            })
+                    }
                 }
             }
-        }
     })
 </script>
 {% endblock %}

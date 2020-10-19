@@ -1,29 +1,34 @@
 from django.shortcuts import render, redirect
 from ..userprofile.models import User, UserProfile
 from django.contrib.admin.views.decorators import staff_member_required
+from apps.core.static.decorators import supervisor_member_required
 from ..core.static.scripts import check_registered
 # Create your views here.
 
 
-@staff_member_required()
+@supervisor_member_required()
 def views_employees(request):
-    if check_registered(request.user.userprofile):
+    if not request.user.userprofile.fully_registered:
         return redirect('user_profile_ui', request.user.username)
     all = UserProfile.objects.all()
+    supervisor = request.user.userprofile
     employees = []
     for employee in all:
-        if not employee.user.username == 'admin' and not employee.name == '' and not employee.last_name == '':
+        if employee.confirmed_employee and employee.department == supervisor.department:
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
 
 
-@staff_member_required()
+@supervisor_member_required()
 def tips_shared(request):
-    if check_registered(request.user.userprofile):
+    if not request.user.userprofile.fully_registered:
         return redirect('user_profile_ui', request.user.username)
+    if len(request.POST) == 0:
+        return render(request, 'core/nope.html')
     points = 0
     money = float(request.POST['money'])
     total = 0
+    supervisor = request.user.userprofile
     for input in request.POST:
         if 'points' in input:
             user = UserProfile.objects.get(pk=int(input[6:]))
@@ -37,7 +42,7 @@ def tips_shared(request):
     employees = UserProfile.objects.all()
     list_of_employees = []
     for employee in employees:
-        if not employee.user.username == 'admin' and not employee.name == '' and not employee.last_name == '':
+        if employee.confirmed_employee and employee.department == supervisor.department:
             list_of_employees.append(employee)
             employee.money = round(float(employee.points) * avg_money, 0)
             employee.points = 0

@@ -4,18 +4,18 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
 @login_required()
 def user_profile_ui(request, user):
-    user_u = User.objects.get(username=user)
+    user_u = get_object_or_404(User, username=user)
     change_password = PasswordChangeForm(user_u)
     department_choices = user_u.userprofile.department_choices
-    for department_choice in department_choices:
-        print(department_choice[1])
     if user != request.user.username:
-        return redirect('frontpage')
+        if not request.user.userprofile.supervisor:
+            return redirect('frontpage')
     context = {
         'user': user,
         'user_profile': user_u.userprofile,

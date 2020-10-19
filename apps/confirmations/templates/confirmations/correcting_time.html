@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+{% load tz %}
+<h1 class="title">Correcting Time {{request.user.username}}</h1>
+<div class="container" id="correcting_time">
+    <div class="columns">
+        <div class="column is-12">
+            <div>
+                <div class="table-column" style="text-align: right">
+                    <h2 class="subtitle is-4">
+                        Started Work at:
+                    </h2>
+                    <h2 class="subtitle is-4">
+                    <p>Year:</p>
+                    <p>Month:</p>
+                    <p>Day:</p>
+                    <p>Hour:</p>
+                    <p>Min:</p>
+                        </h2>
+                </div>
+                <div class="table-column" style="width: 13rem">
+                    <h2 class="subtitle">
+                        {{stime|date:"d/m/Y G:i"}}
+                    </h2>
+                    <p><input class="input is-small" type="time" style="text-align: center" v-model="s_time" value="15:15"></p>
+                    <p><input class="input is-small" type="date" style="text-align: center" v-model="s_date" value=""></p>
+                    <p>[[s_time]]</p>
+                    <p>[[s_date]]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="columns">
+        <div class="column is-12">
+            <div>
+                <div class="table-column" style="text-align: right">
+                    <h2 class="subtitle is-4">
+                        Ended Work at:
+                    </h2>
+                    <h2 class="subtitle is-4" >
+                    <p>Year:</p>
+                    <p>Month:</p>
+                    <p>Day:</p>
+                    <p>Hour:</p>
+                    <p>Min:</p>
+                        </h2>
+                </div>
+                <div class="table-column" style="width: 13rem">
+                    <h2 class="subtitle">
+                        {{etime|date:"d/m/Y G:i"}}
+                    </h2>
+                </div>
+            </div>
+        </div>
+        </div>
+    <div class="columns">
+        <div class="column is-12">
+            <div class="table-column">
+            </div>
+            <div class="table-column">
+                    <button class="button" @click="sendCorrect()">Save</button>
+                </div>
+        </div>
+    </div>
+    </div>
+<div class="container">
+    <h2 v-for="time in times" v-if="time.checked_by_supervisor ==='False'">[[time.users_time.name]]</h2>
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    new Vue ({
+        el: '#correcting_time',
+        delimiters: ['[[', ']]'],
+        data () {
+            return {
+                //s_year: '{{stime.year}}',
+                //s_month: '{{stime.month}}',
+                //s_day: '{{stime.day}}',
+                //s_hour: '{{stime.hour}}',
+                //s_minute: '{{stime.minute}}',
+                //e_year: '{{etime.year}}',
+                //e_month: '{{etime.month}}',
+                //e_day: '{{etime.day}}',
+                //e_hour: '{{etime.hour}}',
+                //e_minute: '{{etime.minute}}',
+                s_time: '{{stime.time|time:"H:i"}}',
+                s_date: '{{stime.date|date:"Y-m-d"}}',
+                times: []
+            }
+        },
+        mounted () {
+            console.log('im here')
+            this.getTimes()
+        },
+        methods: ({
+            sendCorrect: function () {
+                var time = {
+                    'corrected': true,
+                    'time': '{{time_id}}',
+                    's_time': this.s_time,
+                    's_date': this.s_date
+                };
+                fetch('{{time_id}}/api/confirm_time', {
+                    method: 'POST',
+                    headers: {
+                        'ContentType': 'application/json',
+                        'X-CSRFToken': '{{csrf_token}}'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(time)
+                })
+
+            },
+            getTimes: function() {
+                axios.get('http://127.0.0.1:8000/api/workingtime/')
+                    .then(response => this.times = response.data)
+            }
+        })
+    })
+</script>
+{% endblock %}

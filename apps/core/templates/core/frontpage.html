@@ -1,5 +1,9 @@
 {% extends 'core/base.html' %}
+{% load static %}
+{% load transpile %}
+{% block navbar %}
 
+{% endblock %}
 {% block content %}
 <div class="container">
     <div class="columns">
@@ -7,49 +11,133 @@
             <h1 class="title">Work, Work, Work!</h1><br>
                 {% if request.user.is_authenticated %}
                     {% if lazy %}
-                        <h2 class="subtitle is-6">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
-                        <!--<h2 class="subtitle is-3"><strong>Started work | Finished work | Working Time</strong></h2>-->
-                        <table class="table" style="background: #f7f1e3">
-                            <thead>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Working Time</th>
-                                <th>Delete</th>
-                            </thead>
-                            <tbody>
-                                {% for date in work_dates %}
-                                    <form method="post" action="{% url 'delete_workingtime' %}">
-                                        {% csrf_token %}
-                                        <tr>
-                                            <td>{{date.start_working}}</td>
-                                            <td>
-                                                {% if not date.done_working %}
-                                                    Currently at work
-                                                {% else %}
-                                                    {{date.end_working}}
-                                                {% endif %}
-                                            </td>
-                                            <td>{{date.worked_time}}</td>
-                                            <td><button type="submit" name="delete" value="{{date.pk}}" class="button is-danger">X</button></td>
-                                        </tr>
-                                    </form>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <h2 class="subtitle is-5">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
+                            <div></div>
+                            <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Waiting for approve/still at work</div>
+                            <div style="background: hsl(141, 53%, 53%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Confirmed by Supervisor</div>
+                            <div style="background: hsl(348, 100%, 61%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">Corrected by supervisor</div>
+                            <span style="display: inline-block"></span>
+                            <div id="get_time">
+                                <div v-for="time in times" v-if="time.owner === '{{request.user.username}}'">
+                                    <span class="span-row"></span>
+                                    <div class="table-row">
+                                        <div class="table-column" style="width: 18rem">
+                                            [[time.start_working]]
+                                        </div>
+                                        <div class="table-column" v-if="!time.done_working" style="width: 18rem">
+                                            Currently at work
+                                        </div>
+                                        <div class="table-column" v-else style="width: 18rem">
+                                            [[time.end_working]]
+                                        </div>
+                                        <div class="table-column" style="width: 8rem; text-align: right">
+                                            [[time.worked_time]]
+                                        </div>
+                                        <div class="table-column_bulma">
+                                            <div class="dropdown is-hoverable">
+                                              <div class="dropdown-trigger">
+                                                <div v-if="time.checked_by_supervisor">
+                                                <div v-if="time.is_approved_by_supervisor" style="width: 8rem">
+                                                    <button class="button is-success" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="checkmark-outline"></ion-icon><span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span></button>
+                                                </div>
+                                                <div v-else style="width: 8rem">
+                                                    <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="close-outline"></ion-icon><span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span></button>
+                                                </div>
+                                            </div>
+                                            <div v-else style="width: 8rem">
+                                                <button class="button is-warning" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span></button>
+                                            </div>
+                                              </div>
+                                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                                <div class="dropdown-content">
+                                                  <div v-if="time.corrected" class="dropdown-item">
+                                                    [[time.corrected_by]]
+                                                  </div>
+                                                  <div v-if="time.corrected" class="dropdown-item is-active">
+                                                    [[time.corrected_at]]
+                                                  </div>
+                                                  <hr class="dropdown-divider">
+                                                  <div id="frontpage-link" class="dropdown-item">
+                                                      <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
+                                                      <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
+                                                  </a>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-row" v-if="time.corrected" style="color: red">
+                                        <div class="table-column" style="width: 18rem">
+                                            [[time.start_working_corrected]]
+                                        </div>
+                                        <div class="table-column" style="width: 18rem">
+                                            [[time.end_working_corrected]]
+                                        </div>
+                                        <div class="table-column" style="width: 8rem; text-align: right">
+                                            [[time.worked_time_corrected]]
+                                        </div>
+                                    </div>
+                                </div>
+                            <span class="span-row"></span>
+                            </div>
+
                     {% else %}
                         <h2 class="subtitle"><strong>No data of working time yet!</strong></h2>
                     {% endif %}
                 {% else %}
                     <ul>
-                        <li style="list-style-type: decimal"><h2 class="subtitle">Are you forgeting to write your working time?</h2></li>
+                        <li style="list-style-type: decimal"><h2 class="subtitle">Are you forgetting to write your working time?</h2></li>
                         <li style="list-style-type: decimal"><h2 class="subtitle">Do you hate to make hundreds of pictures of workingplan?</h2></li>
                         <li style="list-style-type: decimal"><h2 class="subtitle">Or maybe you are writing it on your mobilephone, which you can loose any time.</h2></li>
                     </ul><br>
                     <h2 class="subtitle">If your answer for any of that questions was <strong>YES</strong>, that website is for you!<br>
-                    By single press button save your working time!<br>
+                        By single press button save your working time!<br>
                     <strong>Sign up now</strong> and try it for yourself!</h2>
-                {%endif%}
+                {% endif %}
         </div>
     </div>
 </div>
+<script type="javascript" src="."></script>
+{% endblock %}
+
+{% block script %}
+<script>
+    new Vue ({
+        el: '#get_time',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                times: '',
+                same_:false,
+            }
+        },
+        mounted () {
+            this.getTimes()
+        },
+        methods: {
+            getTimes: function () {
+                axios.get('/api/workingtime/')
+                .then(response => {
+                    this.times = response.data
+                })
+            },
+            delTime: function (id) {
+                axios.delete('/api/workingtime/'+id+'/',{
+                    headers: {
+                        'ContentType': 'application/json',
+                        'X-CSRFToken': '{{csrf_token}}'
+                    },
+                })
+                .then(response => this.getTimes())
+            }
+        }
+    })
+</script>
 {% endblock %}

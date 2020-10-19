@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="columns">
+        <div class="column is-12">
+            <h1 class="title">TIME</h1>
+            <span class="span-row" style="width: 100%"></span>
+            <div id="confirm_time">
+                <table class="table" style="background: #f5f5f5">
+                    <tbody v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true">
+                    <tr>
+                            <th>Employee:</th>
+                            <td>[[time.name]]&nbsp;[[time.last_name]]</td>
+                        </tr>
+                        <tr>
+                            <th>Started Work:</th>
+                            <td>
+                                <input class="input is-small" v-model="times[index].start_working"  type="datetime-local" style="text-align: center; width: auto;" >
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ended Work:</th>
+                            <td>
+                                <input class="input is-small" v-model="times[index].end_working" type="datetime-local" style="text-align: center; width: auto">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Worked Time:</th>
+                            <td>[[time.worked_time]]</td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <div style="display: inline-block; background: #00D000; border-radius: 8px">Confirm</div>
+                                <div style="display: inline-block; background: #ff4444; border-radius: 8px">Correct</div>
+                            </th>
+                            <td>
+                                <button class="button is-success" @click="confirmTime(time.id)">
+                                <ion-icon name="checkmark-outline"></ion-icon></button>
+                                <button type="submit" class="button is-danger" @click="sendCorrected(time.id,index)">
+                                    <ion-icon name="close-outline"></ion-icon></button>
+                            </td>
+                        </tr>
+                    <tr>
+                        <th></th>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new Vue ({
+        el: '#confirm_time',
+        delimiters: ['[[', ']]'],
+        data () {
+            return {
+                times: [],
+                times_corrected: [],
+                over: ''
+            }
+        },
+        mounted () {
+            console.log('im here');
+            this.getTime()
+        },
+        methods: ({
+            sendCorrected: function (id, index) {
+                console.log(id);
+                var time = this.times[index];
+                var time_corrected = this.times_corrected[index];
+                console.log(time);
+                axios.put('/api/workingtime/'+id+'/', {
+                    'start_working': time.start_working,
+                    'start_working_corrected': time_corrected.start_working,
+                    'end_working': time.end_working,
+                    'end_working_corrected': time_corrected.end_working,
+                    'checked_by_supervisor': true,
+                    'is_approved_by_supervisor': false,
+                    'index': index,
+                    'ending_work': false
+                },
+                    {
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}'
+                    }
+                }).then(response => {
+                    this.over = response.data['over']
+                    console.log(response.data);
+                    this.getTime()
+                    console.log(response.data.over)
+                })
+            },
+            confirmTime: function (id) {
+                axios.put('/api/workingtime/'+id+'/', {
+                    'checked_by_supervisor': true,
+                    'is_approved_by_supervisor': true,
+                    'ending_work': false
+                    },
+                    {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                })
+                .then(response => {
+                    this.over = response.data['over']
+                    console.log('Confirmed!')
+                    this.getTime()
+                })
+            },
+            getTime: function () {
+                axios.get('/api/workingtime/')
+                    .then(response => {
+                        this.times = response.data;
+                        this.times_corrected = response.data;
+                        console.log(this.times)
+                    })
+            }
+        }),
+
+    })
+</script>
+{% endblock %}

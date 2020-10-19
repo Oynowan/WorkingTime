@@ -16,58 +16,27 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from django.contrib.auth import views
-
-from apps.core.views import frontpage, signup, delete_workingtime
-from apps.workingtime.views import working, start_working, end_working, working_2
-from apps.tips.views import views_employees, tips_shared
-from apps.workingtime.api import api_start_working, api_end_working
-from apps.userprofile.views import user_profile_ui
-from apps.userprofile.api import api_save_profile_changes
 
 urlpatterns = [
-
-    #
     #
     # Core app
-    path('', frontpage, name='frontpage'),
-    path('signup/', signup, name='signup'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('login/', views.LoginView.as_view(template_name='core/login.html'), name='login'),
-    path('deleted/', delete_workingtime, name='delete_workingtime'),
-
-    #
+    path('', include('apps.core.urls')),
     #
     # WorkingTime APP
-
-    path('working/', working, name='working'),
-    #path('working_2/', working_2, name='working_2'),
-    path('workingtime/start_working/', start_working, name='start_working'),
-    path('workingtime/end_working/', end_working, name='end_working'),
-
-    #
-    #
-    # API WorkingTime app
-
-    #path('api/start_working/', api_start_working, name='api_start_working'),
-    #path('api/end_working/', api_end_working, name='api_end_working'),
-    path('api/save_profile_changes/', api_save_profile_changes, name='api_save_profile_changes'),
-
-    #
+    path('', include('apps.workingtime.urls')),
     #
     # Tips APP
-
-    path('tips/', views_employees, name='views_employees'),
-    path('tips/tips_shared/', tips_shared, name='tips_shared'),
-
+    path('', include('apps.tips.urls')),
     #
+    # Confirmations APP
+    path('', include('apps.confirmations.urls')),
     #
     # UserProfile
-
-    path('profile/<str:user>/', user_profile_ui, name='user_profile_ui'),
-
-    #
+    path('', include('apps.userprofile.urls')),
     #
     # Admin
-    path('admin/', admin.site.urls),
+    path('new_path/for/admin/', admin.site.urls),
+    #
+    # DRF Api
+    path('', include('apps.drf.urls')),
 ]

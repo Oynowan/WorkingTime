@@ -1,35 +1,28 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.http import HttpResponseRedirect
 
 from .models import WorkingTime
 from django.contrib.auth.models import User
 from ..userprofile.models import UserProfile
-from ..core.static.scripts import time_count, check_registered
+from ..core.static.scripts import time_count
 
 # Create your views here.
 
 
 @login_required()
-def working_2(request):
-    return render(request, 'workingtime/working_2.html')
-
-
-@login_required()
 def working(request):
-    if check_registered(request.user.userprofile):
+    if not request.user.userprofile.fully_registered:
         return redirect('user_profile_ui', request.user.username)
     started = 0
     p = User.objects.get(pk=request.user.id)
     time = p.userprofile.workingtime.first()
     if not time:
-        worked = True
-        context = {
-            'worked': worked,
-            'started': started
-        }
-        return render(request, 'workingtime/working.html', context)
+        user = UserProfile.objects.get(user=p)
+        user.worked_today = False
+        user.at_work = False
+        user.save()
+        return render(request, 'workingtime/working.html')
     if timezone.now().day - time.start_working.day > 0:
         user = UserProfile.objects.get(user=p)
         user.worked_today = False
@@ -55,9 +48,9 @@ def working(request):
     return render(request, 'workingtime/working.html', context)
 
 
-@login_required()
+"""@login_required()
 def start_working(request):
-    if check_registered(request.user.userprofile):
+    if not request.user.userprofile.fully_registered:
         return redirect('user_profile_ui', request.user.username)
     p = User.objects.get(pk=request.user.id)
     user = UserProfile.objects.get(user=p)
@@ -82,7 +75,7 @@ def start_working(request):
 
 @login_required()
 def end_working(request):
-    if check_registered(request.user.userprofile):
+    if not request.user.userprofile.fully_registered:
         return redirect('user_profile_ui', request.user.username)
     p = UserProfile.objects.get(user=request.user)
     time = p.workingtime.first()
@@ -105,10 +98,7 @@ def end_working(request):
     started = 2
     start = time.start_working
     end = time.end_working
-    min = end - start
-    min = min.total_seconds()
-    min = f'{min / 60:.0f}'
-    time.worked_time = time_count(min)
+    time.worked_time = time_count(start, end)
     time.save()
     worked_time = time.worked_time
     context = {
@@ -119,5 +109,5 @@ def end_working(request):
     }
 
     return render(request, 'workingtime/working.html', context)
-
+"""
 

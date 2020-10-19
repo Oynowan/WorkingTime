@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <!-- META -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
@@ -8,9 +9,13 @@
     <title>{% block title %}{%endblock%}Worksite</title>
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <link type="text/css" rel="stylesheet" href="../../static/style.css">
+    <link type="text/css" rel="stylesheet" href="{% static 'style.css' %}" />
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
     <!-- Scripts -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule="" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
 <!-- Nav -->
@@ -24,38 +29,69 @@
        </div>
     <div class="navbar-menu" v-bind:class="{'is-active': isOpen}" style="background: hsl(0, 0%, 21%)">
         <div class="navbar-start">
-                    <div class="navbar-item">
-                        <a class="button is-success" href="{% url 'frontpage' %}">
-                            <strong>HOME PAGE</strong>
+                    <div class="navbar-item" style="margin-left: 1rem" id="home-page-link">
+                        <a href="{% url 'frontpage' %}">
+                            <h2 class="subtitle is-3" style="color: white"><ion-icon name="home-outline"></ion-icon></h2>
                         </a>
                     </div>
-                    {% if request.user.is_authenticated %}
-                        <div class="navbar-item">
-                            <a class="button is-light" href="{% url 'working' %}">
-                                <strong>WORK</strong>
-                            </a>
-                        </div>
+                    <div class="navbar-item">
+                        <div class="dropdown is-hoverable">
+                            <div class="dropdown-trigger">
+                                <button class="button is-light" aria-haspopup="true" aria-controls="dropdown-menu">
+                                    <span><strong>Menu</strong></span>
+                                    <span class="icon is-small">
+                                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                            </div>
+                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                <div class="dropdown-content">
+                                    {% if request.user.is_authenticated %}
+                                    <a class="dropdown-item" href="{% url 'working' %}">
+                                        <strong>WORK</strong>
+                                    </a>
+                                    {% endif %}
+                                    {% if request.user.userprofile.supervisor %}
+                                    <a class="dropdown-item" href="{% url 'views_employees' %}">
+                                        <strong>TIPS</strong>
+                                    </a>
+                                    <a class="dropdown-item" href="{% url 'to_confirm' %}">
+                                        <strong>Accounts([[to_confirm_acc]])</strong>
+                                    </a>
+                                    <a class="dropdown-item" href="{% url 'to_confirm_time' %}">
+                                        <strong>Time([[to_confirm_time]])</strong>
+                                    </a>
+                                    {%endif%}
+                                    {% if request.user.is_authenticated %}
+                                  <hr class="dropdown-divider">
+                                    <a href="{% url 'user_profile_ui' request.user.username %}" class="dropdown-item">
+                                        <strong>Profile</strong>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                              </div>
+                            </div>
+                    </div>
                         <!--<a class="button is-light" href=" url 'working_2' "><strong>WORK 2 Testing API</strong></a>-->
-                    {% endif %}
-                    {% if request.user.is_staff %}
-                        <div class="navbar-item">
-                            <a class="button is-light" href="{% url 'views_employees' %}">
-                                <strong>TIPS</strong>
-                            </a>
-                        </div>
-                    {% endif %}
+                    {% block navbar %}
+
+                    {% endblock %}
                 {% if request.user.userprofile.at_work %}
-            <div class="navbar-item"><p>Currently at work!</p></div>
+                    <div class="navbar-item"><h2 style="color: #FFF">Currently at work!</h2></div>
                 {% endif %}
         </div>
         <div class="navbar-end">
                 {% if request.user.is_authenticated %}
-                    <div class="navbar-item"><p>HI {{ request.user.username }}!</p></div>
                     <div class="navbar-item">
-                        <a href="{% url 'user_profile_ui' request.user.username %}" class="button is-light">
-                            <strong>Profile</strong>
-                        </a>
+                        <div class="field">
+                            <div class="control">
+                                <form method="get" action="{% url 'list_of_users'%}">
+                                    <input class="input" name="q"  type="text" placeholder="Search employee">
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                    <div class="navbar-item"><h2 style="color: #FFF">HI {{ request.user.username }}!</h2></div>
                     <div class="navbar-item">
                         <a href="{% url 'logout' %}" class="button is-danger">
                             <strong>Logout</strong>
@@ -80,10 +116,8 @@
 
 <!-- Content -->
 <section class="section">
-    <div class="row">
         {% block content %}
         {% endblock content %}
-    </div>
 </section>
 <!-- End Content -->
 <footer class="footer">
@@ -99,12 +133,55 @@
     </div>
 </footer>
 <!-- Scripts -->
+
 <script>
+
     new Vue ({
         el: '#nav-burger',
-        data: {
-            isOpen: false
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                isOpen: false,
+                to_confirm_acc: 0,
+                to_confirm_time: 0,
+                search: ''
+            }
+        },
+        mounted () {
+            this.toConfirmAcc();
+            this.toConfirmTime()
+        },
+        methods: {
+            toConfirmAcc: function () {
+                axios.get('/api/userprofile/')
+                .then(response => {
+                let accounts = 0;
+                let data = response.data;
+                let i;
+                for (i = 0; i < data.length; i++) {
+                    if ( data[i].checked_account === false && data[i].fully_registered === true) {
+                        accounts++;
+                    }
+                }
+                this.to_confirm_acc = accounts
+            })
+            },
+            toConfirmTime: function () {
+                axios.get('/api/workingtime/')
+                .then(response => {
+                let times = 0;
+                let data = response.data;
+                let i;
+                for (i = 0; i < data.length; i++) {
+                    if ( data[i].checked_by_supervisor === false && data[i].done_working === true) {
+                        times++;
+                    }
+                }
+                this.to_confirm_time = times
+            })
+            }
         }
+
     })
 </script>
 {% block script %}

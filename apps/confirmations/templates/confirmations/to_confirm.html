@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+ {% load static %}
+<div class="container">
+    <div class="columns">
+        <div class="column is-12">
+            <h1 class="title">
+                New accounts
+            </h1>
+            <h2 class="subtitle is-4">
+                Approve ONLY accounts with correct data(informations)<br>and which are real employees of hotel.
+            </h2>
+            <div id="confirm_form">
+                {% for employee in to_confirm %}
+                    <div class="table-column">
+                            {{employee.name}}
+                    </div>
+                    <div class="table-column">
+                            {{employee.last_name}}
+                    </div>
+                    <div class="table-column" style="padding-left: 1rem">
+                        <a href="{% url 'user_profile_ui' employee.user %}">Profile</a>
+                    </div>
+                    <div class="table-column_bulma">
+                        <button class="button is-success" @click="sendConfirmation('{{employee.pk}}')">
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                        </button>
+                        <div style="margin-top: .5rem">
+                        <button class="button is-danger" @click="sendNotConfirmation('{{employee.pk}}')">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                            </div>
+                    </div>
+                <span class="span-row" style="width: 95%; margin-bottom: .5rem"></span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        new Vue ({
+            el: '#confirm_form',
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    seen: false
+                }
+            },
+            methods: ({
+                sendConfirmation: function (user) {
+                    var person = {
+                        'user': user,
+                        'confirmed': true,
+                        'corrected': false
+                    };
+                    fetch('/api/confirmation', {
+                        method: 'POST',
+                        headers: {
+                            'ContentType': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(person)
+
+                    })
+                        .then(response => {
+                            console.log('it worked')
+                        })
+                },
+            })
+        })
+    </script>
+{% endblock %}

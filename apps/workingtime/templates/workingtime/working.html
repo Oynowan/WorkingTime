@@ -4,51 +4,137 @@
 {% load humanize %}
 
 {% block content %}
-    <div class="container" id="workingapp">
+    <div class="container">
         <div class="columns">
             <div class="column is-12">
-                    {% if not request.user.userprofile.at_work %}
-                        {% if not request.user.userprofile.worked_today %}
-                <div class="wrapper-form">
-                            <h2 class="subtitle is-3"><strong>
-                                Press the button<br>to start counting<br>your work time!
-                            </strong></h2>
-                            <form method="post" action="{% url 'start_working' %}">
-                                {% csrf_token %}
-                                <label name="button">
-                                    <button class="button is-success" type="submit"><strong>WORK!</strong></button>
-                                </label>
-                            </form>
-                        {% else %}
-                    <h1 class="title">You have been working today!<br> </h1>
-                    <h2 class="subtitle is-5">For {{ worked_time }}</h2>
-                        {% endif %}
-                </div>
-                    {% elif request.user.userprofile.at_work and not request.user.userprofile.worked_day%}
-                <div class="wrapper-form">
-                         <h1 class="title">You are at work! Have a nice shift!</h1>
-                         <h2 class="subtitle is-4">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
-                        You can't start working again in the same day!</h2>
-                        <form method="post" action="{% url 'end_working' %}">
-                            {% csrf_token %}
-                            <label name="button">
-                                <button class="button is-danger"><strong>WORK!</strong></button>
-                            </label>
-                        </form>
-                        <p>{{ start|naturaltime }}</p>
-                </div>
-                    {% else %}
-                        <div class="columns">
-                            <div class="column is-12">
-                                <h1 class="title">You have been working today for {{ worked_time }}</h1>
-                                <h2 class="subtitle is-3">Enjoy your off day, you deserved it! :)</h2>
-                            </div>
+                <div id="working-time">
+                    <div v-if="!user.at_work">
+                        <div v-if="!user.worked_today">
+                            <h2 class="subtitle is-3">
+                                <strong>
+                                    Press the button<br>to start counting<br>your work time!
+                                </strong>
+                            </h2>
+                            <button class="button is-success" @click="startWork()">Work</button>
                         </div>
-                    {% endif %}
+                        <div v-else>
+                            <h1 class="title">You have been working today!<br> </h1>
+                            <h2 class="subtitle is-5">[[latest_time.worked_time]]</h2>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div v-if="user.at_work && !user.worked_today">
+                            <h1 class="title">You are at work! Have a nice shift!</h1>
+                            <h2 class="subtitle is-4">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
+                                You can't start working again in the same day!<br>
+                                Check box if you didnt have a break.</h2>
+                            <div style="display: inline-block;">
+                                <input v-model="break_" type="checkbox">
+                                Break
+                            </div><br>
+                            <button class="button is-danger" @click="stopWork()">Work</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block script %}
+<script>
+    new Vue ({
+        el: '#working-time',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                user: '',
+                latest_time: '',
+                break_: false
+            }
+        },
+        mounted () {
+            this.getUsersData(parseInt('{{request.user.userprofile.id}}'))
+        },
+        methods: {
+            getUsersData: function(pk) {
+                axios.get('/api/userprofile/'+pk+'/')
+                .then(response => {
+                    this.user = response.data;
+                    this.latest_time = this.getTime(response.data.workingtime[0])
+                })
+            },
+            startWork: function() {
+                axios.post('/api/workingtime/', {
+                    'start_working': new Date(),
+                    'end_working': new Date(),
+                    'start_working_corrected': new Date(),
+                    'end_working_corrected': new Date(),
+                    'worked_time_seconds': 0,
+                    'corrected_by': '',
+                    'corrected_at': new Date()
+                }, {
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => {
+                    this.userAtWork('{{request.user.userprofile.id}}')
+                })
+            },
+            stopWork: function () {
+                this.getTime(this.user.workingtime[0])
+                axios.put('/api/workingtime/'+this.user.workingtime[0]+'/', {
+                    'ending_work': true,
+                    'break': this.break_
+                }, {
+                    headers: {
+                        'Type-Content': 'application/json',
+                        'X-CSRFToken': '{{csrf_token}}'
+                    }
+                })
+                .then(response => {
+                    this.userNotAtWork(this.user.id)
+                    console.log(this.latest_time)
+                })
+            },
+            userAtWork: function (id) {
+                axios.put('/api/userprofile/'+id+'/', {
+                    'at_work': true,
+                }, {
+                    method:'PUT',
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => {
+                    this.getUsersData('{{request.user.userprofile.id}}');
+
+                })
+            },
+            userNotAtWork: function (id) {
+                axios.put('/api/userprofile/'+id+'/', {
+                    'at_work': false,
+                    'worked_today': true
+                }, {
+                    method:'PUT',
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => this.getUsersData('{{request.user.userprofile.id}}'))
+            },
+            getTime: function (id) {
+                axios.get('/api/workingtime/'+id+'/')
+                .then(response => this.latest_time = response.data )
+            }
+        },
+    })
+</script>
 {% endblock script %}
