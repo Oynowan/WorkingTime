@@ -9,7 +9,6 @@
         <div class="column is-12">
             <h1 class="title">Work, Work, Work!</h1><br>
                 {% if request.user.is_authenticated %}
-                    {% if lazy %}
                         <h2 class="subtitle is-5">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
                             <div></div>
                             <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
@@ -89,9 +88,7 @@
                                 </div>
                             <span class="span-row"></span>
                             </div>
-
-                    {% else %}
-                        <h2 class="subtitle"><strong>No data of working time yet!</strong></h2>
+            
                     {% endif %}
                 {% else %}
                     <ul>

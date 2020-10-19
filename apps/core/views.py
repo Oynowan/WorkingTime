@@ -16,15 +16,9 @@ def frontpage(request):
         work_dates = WorkingTime.objects.filter(users_time=request.user.userprofile)
     else:
         work_dates = ['AnonymousUser']
-    try:
-        if not work_dates:
-            lazy = True
-    except IndexError:
-        lazy = False
 
     context = {
         'work_dates': work_dates,
-        'lazy': lazy,
     }
     return render(request, 'core/frontpage.html', context)
 
