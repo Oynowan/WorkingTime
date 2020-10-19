@@ -22,14 +22,9 @@ def frontpage(request):
     except IndexError:
         lazy = False
 
-    to_confirm = UserProfile.objects.filter(Q(checked_account=False), Q(fully_registered=True))
-    to_confirm_time = WorkingTime.objects.filter(Q(checked_by_supervisor=False), Q(done_working=True))
     context = {
         'work_dates': work_dates,
         'lazy': lazy,
-        'to_confirm_num': len(to_confirm),
-        'to_confirm_time': len(to_confirm_time)
-
     }
     return render(request, 'core/frontpage.html', context)
 
