@@ -7,9 +7,22 @@ Profile |
 <div class="container">
     <div class="columns">
         <div class="column is-12">
-                <!-- Changing Datas form -->
             <div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
                 <h1 class="title">{{ user }}s profile</h1><br>
+                {% if user_profile.supervisor %}
+                    {% if user_profile.user.is_staff %}
+                    <h2 class="subtitle is-5">Admin</h2>
+                    {% elif user_profile.manager %}
+                    <h2 class="subtitle is-5">Manager</h2>
+                    {% else %}
+                    <h2 class="subtitle is-5">Supervisor</h2>
+                    {% endif %}
+                {% elif not user_profile.supervisor and user_profile.confirmed_employee %}
+                <h2 class="subtitle is-5">Employee</h2>
+                {% else %}
+                <h2 class="subtitle is-5">Guest</h2>
+                {% endif %}
+                <!-- Changing Datas form -->
                 <form method="post" v-on:submit.prevent="saveChanges()">
                     <table class="table" id="profile_table" style="background: #f5f5f5;">
                     <thead>
@@ -20,7 +33,7 @@ Profile |
                         </th>
                     </thead>
                     <tbody>
-                        <tr>
+                            <tr>
                             {% if request.user.userprofile.supervisor %}
                                 <td><h2 class="subtitle is-5"><strong>Check if employee:</strong>&nbsp;</h2></td>
                                 <td><input type="checkbox" v-model="confirmed"></td>
@@ -33,6 +46,12 @@ Profile |
                                 {% endif %}
                             {% endif %}
                         </tr>
+                            {% if request.user.userprofile.manager %}
+                            <tr>
+                                <td><h2 class="subtitle is-5"><strong>Supervisor:</strong>&nbsp;</h2></td>
+                                <td><input type="checkbox" v-model="confirmed_supervisor"></td>
+                            </tr>
+                            {% endif %}
                         <tr>
                             <td><h2 class="subtitle is-5"><strong>Name:</strong>&nbsp;</h2></td>
                             {% if user_profile.name == '' or request.user.userprofile.supervisor %}
@@ -175,7 +194,7 @@ Profile |
                                                   <hr class="dropdown-divider">
                                                     <div class="dropdown-item">
                                                       <a @click="sendCorrected(time.id, index)" style="color: hsl(0, 0%, 21%)">
-                                                      <strong>CORRECT <ion-icon name="trash-outline"></ion-icon></strong>
+                                                      <strong>SAVE CHANGES <ion-icon name="pencil-outline"></ion-icon></strong>
                                                     </a>
                                                   </div>
                                                   <div id="frontpage-link" class="dropdown-item">
@@ -296,6 +315,7 @@ Profile |
                 department: '{{ user_profile.department }}',
                 show_department: '{{ user_profile.department }}' === 'Unspecify',
                 confirmed: '{{ user_profile.confirmed_employee }}' === 'True',
+                confirmed_supervisor: '{{ user_profile.supervisor}}' === 'True',
             }
         },
 
@@ -332,7 +352,8 @@ Profile |
             saveChanges: function () {
                     if (this.name === '{{ user_profile.name }}' && this.last_name === '{{user_profile.last_name}}' &&
                         this.age === '{{user_profile.age}}' && this.email === '{{user_profile.email}}' &&
-                        !this.show_department && this.confirmed === '{{ user_profile.confirmed_employee}}') {
+                        !this.show_department && this.confirmed === '{{ user_profile.confirmed_employee}}'&&
+                        this.confirmed_supervisor === '{{ user_profile.suervisor}}') {
                         console.log('You didnt change anything');
                         console.log(this.department)
                     } else {
@@ -343,7 +364,8 @@ Profile |
                             'age': this.age,
                             'email': this.email,
                             'department': this.department,
-                            'confirmed': this.confirmed
+                            'confirmed': this.confirmed,
+                            'confirmed_supervisor': this.confirmed_supervisor
                         };
                         fetch('/api/save_profile_changes/', {
                             method: 'POST',
@@ -357,6 +379,7 @@ Profile |
                             .then((response) => response.json())
                             .then((data) => {
                                 this.wrongEmail = data['email'];
+                                console.log('im back')
                             })
                     }
                 }

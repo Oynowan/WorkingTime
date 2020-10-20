@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     checked_account = models.BooleanField(default=False)
     confirmed_employee = models.BooleanField(default=False)
     supervisor = models.BooleanField(default=False)
+    manager = models.BooleanField(default=False)
 
     # Departments
     department_choices = (

@@ -18,17 +18,15 @@ def api_save_profile_changes(request):
     else:
         user = UserProfile.objects.get(user=request.user)
     if body['name'] == '' or body['last_name'] == '' or body['department'] == 'Unspecify':
-        print('false')
         user.fully_registered = False
     else:
-        print('true')
         user.fully_registered = True
-
+    if request.user.userprofile.manager:
+        user.supervisor = body['confirmed_supervisor']
     user.name = body['name']
     user.last_name = body['last_name']
     user.department = mark_safe(body['department'])
     email = UserProfile.objects.filter(email=body['email'])
-    print(re.match(email_check, body['email']))
     if len(email) > 0 and email[0].user.pk != user.user.pk or not re.match(email_check, body['email']):
         wrong_email = True
     else:
