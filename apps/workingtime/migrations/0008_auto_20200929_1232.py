@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='workingtime',
             name='worked_time',
-            field=models.IntegerField(default=0),
+            field=models.CharField(max_length=255, default='', null=True, blank=True),
         ),
     ]

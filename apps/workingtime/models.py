@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone, dateformat
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import DateTimeRangeField
+import datetime
 
 from apps.userprofile.models import UserProfile
 # Create your models here.
@@ -8,10 +10,10 @@ from apps.userprofile.models import UserProfile
 
 class WorkingTime(models.Model):
     users_time = models.ForeignKey(UserProfile, related_name='workingtime', on_delete=models.CASCADE)
-    start_working = models.DateTimeField(default=timezone.now)
+    start_working = models.DateTimeField(auto_now_add=True)
     start_working_corrected = models.DateTimeField(default=timezone.now)
-    end_working = models.DateTimeField(default=timezone.now)
-    end_working_corrected = models.DateTimeField(default=timezone.now)
+    end_working = models.DateTimeField(auto_now_add=True)
+    end_working_corrected = models.DateTimeField(auto_now_add=True)
     corrected = models.BooleanField(default=False)
 
     worked_time = models.CharField(max_length=255, default='', null=True, blank=True)
