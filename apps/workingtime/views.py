@@ -17,7 +17,6 @@ def working(request):
     started = 0
     p = User.objects.get(pk=request.user.id)
     time = WorkingTime.objects.filter(users_time=p.userprofile)
-    print(len(time))
     if len(time) == 0:
         user = UserProfile.objects.get(user=p)
         user.worked_today = False
