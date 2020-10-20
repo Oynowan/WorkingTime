@@ -124,6 +124,7 @@
             getTime: function () {
                 axios.get('/api/workingtime/')
                     .then(response => {
+                        this.times = [];
                         for (i=0; i < response.data.length; i++) {
                             if (!response.data[i].checked_by_supervisor && response.data[i].done_working) {
                                 console.log(response.data[i])
