@@ -15,8 +15,8 @@ def to_confirm(request):
 
 @supervisor_member_required()
 def to_confirm_time(request):
-    to_confirm_times = WorkingTime.objects.filter(Q(checked_by_supervisor=False), Q(done_working=True))
-    return render(request, 'confirmations/to_confirm_time.html', {'to_confirm_time': to_confirm_times})
+    # to_confirm_times = WorkingTime.objects.filter(Q(checked_by_supervisor=False), Q(done_working=True))
+    return render(request, 'confirmations/to_confirm_time.html')
 
 
 @supervisor_member_required()

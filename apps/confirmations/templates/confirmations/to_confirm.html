@@ -1,7 +1,6 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
- {% load static %}
 <div class="container">
     <div class="columns">
         <div class="column is-12">
@@ -13,26 +12,26 @@
             </h2>
             <div id="confirm_form">
                 {% for employee in to_confirm %}
-                    <div class="table-column">
+                <div class="table-row">
+                    <div class="table-column" style="width: 8rem">
                             {{employee.name}}
                     </div>
-                    <div class="table-column">
+                    <div class="table-column" style="width: 8rem">
                             {{employee.last_name}}
                     </div>
-                    <div class="table-column" style="padding-left: 1rem">
+                    <div class="table-column" style="padding-left: 1rem; width: 8rem">
                         <a href="{% url 'user_profile_ui' employee.user %}">Profile</a>
                     </div>
                     <div class="table-column_bulma">
-                        <button class="button is-success" @click="sendConfirmation('{{employee.pk}}')">
+                        <button class="button is-success" @click="sendConfirmation('{{employee.pk}}')" style="float:left; margin-right: 0.5rem">
                             <ion-icon name="checkmark-outline"></ion-icon>
                         </button>
-                        <div style="margin-top: .5rem">
                         <button class="button is-danger" @click="sendNotConfirmation('{{employee.pk}}')">
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
-                            </div>
                     </div>
                 <span class="span-row" style="width: 95%; margin-bottom: .5rem"></span>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -58,7 +57,27 @@
                         'confirmed': true,
                         'corrected': false
                     };
-                    fetch('/api/confirmation', {
+                    fetch('/api/confirmation/', {
+                        method: 'POST',
+                        headers: {
+                            'ContentType': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(person)
+
+                    })
+                        .then(response => {
+                            console.log('it worked')
+                        })
+                },
+                sendNotConfirmation: function (user) {
+                    var person = {
+                        'user': user,
+                        'confirmed': false,
+                        'corrected': false
+                    };
+                    fetch('/api/confirmation/', {
                         method: 'POST',
                         headers: {
                             'ContentType': 'application/json',
