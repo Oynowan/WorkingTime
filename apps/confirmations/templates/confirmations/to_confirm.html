@@ -11,6 +11,7 @@
                 Approve ONLY accounts with correct data(informations)<br>and which are real employees of hotel.
             </h2>
             <div id="confirm_form">
+                {% if to_confirm %}
                 {% for employee in to_confirm %}
                 <div class="table-row">
                     <div class="table-column" style="width: 8rem">
@@ -33,6 +34,11 @@
                 <span class="span-row" style="width: 95%; margin-bottom: .5rem"></span>
                 </div>
                 {% endfor %}
+                {% else %}
+                <h2 class="subtitle is-4">
+                    No new accounts to approve.
+                </h2>
+                {% endif %}
             </div>
         </div>
     </div>

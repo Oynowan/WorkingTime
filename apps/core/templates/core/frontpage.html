@@ -57,10 +57,10 @@
                                               </div>
                                               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
-                                                  <div v-if="time.corrected" class="dropdown-item">
+                                                  <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item">
                                                     [[time.corrected_by]]
                                                   </div>
-                                                  <div v-if="time.corrected" class="dropdown-item is-active">
+                                                  <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item is-active">
                                                     [[time.corrected_at]]
                                                   </div>
                                                   <hr class="dropdown-divider">

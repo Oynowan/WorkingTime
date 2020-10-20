@@ -8,7 +8,9 @@
             {% if object_list.is_valid %}
             {% for object in object_list.object_list %}
                 {% for user in object %}
-            <h2 class="subtitle is-5"><a class="button is-dark" href="{% url 'user_profile_ui' user.user.username %}">{{user.name}} {{user.last_name}}</a></h2>
+                {% if not user.user.is_staff %}
+                    <h2 class="subtitle is-5"><a class="button is-dark" href="{% url 'user_profile_ui' user.user.username %}">{{user.name}} {{user.last_name}}</a></h2>
+                {% endif %}
                 {% endfor %}
             {% endfor %}
             {% else %}

@@ -14,7 +14,7 @@ def views_employees(request):
     supervisor = request.user.userprofile
     employees = []
     for employee in all:
-        if employee.confirmed_employee and employee.department == supervisor.department:
+        if employee.confirmed_employee and employee.department == supervisor.department and not employee.user.is_staff:
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
 
@@ -42,7 +42,7 @@ def tips_shared(request):
     employees = UserProfile.objects.all()
     list_of_employees = []
     for employee in employees:
-        if employee.confirmed_employee and employee.department == supervisor.department:
+        if employee.confirmed_employee and employee.department == supervisor.department and not employee.user.is_staff:
             list_of_employees.append(employee)
             employee.money = round(float(employee.points) * avg_money, 0)
             employee.points = 0

@@ -16,14 +16,15 @@ def working(request):
         return redirect('user_profile_ui', request.user.username)
     started = 0
     p = User.objects.get(pk=request.user.id)
-    time = WorkingTime.objects.filter(users_time=p.userprofile)
-    if len(time) == 0:
+    time = p.userprofile.workingtime.first()
+
+    if not time:
         user = UserProfile.objects.get(user=p)
         user.worked_today = False
         user.at_work = False
         user.save()
         return render(request, 'workingtime/working.html')
-    time = time[0]
+    print(timezone.now().day, time.start_working.day)
     if timezone.now().day - time.start_working.day > 0:
         user = UserProfile.objects.get(user=p)
         user.worked_today = False

@@ -105,6 +105,8 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
             elif request.data['checked_by_supervisor'] and request.data['is_approved_by_supervisor']:
                 workingtime.checked_by_supervisor = True
                 workingtime.is_approved_by_supervisor = True
+                workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
+                workingtime.corrected_at = timezone.now()
 
         workingtime.save()
         return Response({'over': False, 'success': True})

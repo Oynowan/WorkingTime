@@ -8,6 +8,7 @@
             <h1 class="title">TIME</h1>
             <span class="span-row" style="width: 100%"></span>
             <div id="confirm_time">
+                <div v-if="!times.length">
                 <table class="table" style="background: #f5f5f5">
                     <tbody v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true">
                     <tr>
@@ -48,6 +49,12 @@
                     </tr>
                     </tbody>
                 </table>
+                </div>
+                <div v-else>
+                    <h2 class="subtitle is-4">
+                        No new times to confirm.
+                    </h2>
+                </div>
             </div>
         </div>
     </div>

@@ -58,10 +58,11 @@
         },
         methods: {
             getUsersData: function(pk) {
+                vm = this
                 axios.get('/api/userprofile/'+pk+'/')
                 .then(response => {
                     this.user = response.data;
-                    this.latest_time = this.getTime(response.data.workingtime[0])
+                    vm.latest_time = this.getTime(response.data.workingtime[0])
                 })
             },
             startWork: function() {
@@ -96,8 +97,8 @@
                     }
                 })
                 .then(response => {
-                    this.userNotAtWork(this.user.id)
-                    console.log(this.latest_time)
+                    this.userNotAtWork(this.user.id);
+                    return response.data
                 })
             },
             userAtWork: function (id) {
