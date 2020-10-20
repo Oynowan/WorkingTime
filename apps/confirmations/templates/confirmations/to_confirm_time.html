@@ -8,7 +8,7 @@
             <h1 class="title">TIME</h1>
             <span class="span-row" style="width: 100%"></span>
             <div id="confirm_time">
-                <div v-if="!times.length">
+                <div v-if="times.length">
                 <table class="table" style="background: #f5f5f5">
                     <tbody v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true">
                     <tr>
@@ -49,10 +49,10 @@
                     </tr>
                     </tbody>
                 </table>
-                </div>
+                    </div>
                 <div v-else>
                     <h2 class="subtitle is-4">
-                        No new times to confirm.
+                        No new working times to confirm.
                     </h2>
                 </div>
             </div>
@@ -75,13 +75,13 @@
         },
         mounted () {
             this.getTime()
+
         },
         methods: ({
             sendCorrected: function (id, index) {
                 console.log(id);
                 var time = this.times[index];
                 var time_corrected = this.times_corrected[index];
-                console.log(time);
                 axios.put('/api/workingtime/'+id+'/', {
                     'start_working': time.start_working,
                     'start_working_corrected': time_corrected.start_working,
@@ -98,9 +98,8 @@
                     }
                 }).then(response => {
                     this.over = response.data['over'];
-                    console.log(response.data);
+                    console.log('Corrected!')
                     this.getTime();
-                    console.log(response.data.over)
                 }, 	(error) => { console.log(error) })
             },
             confirmTime: function (id) {
@@ -125,9 +124,13 @@
             getTime: function () {
                 axios.get('/api/workingtime/')
                     .then(response => {
-                        this.times = response.data;
-                        this.times_corrected = response.data;
-                        console.log(this.times)
+                        for (i=0; i < response.data.length; i++) {
+                            if (!response.data[i].checked_by_supervisor && response.data[i].done_working) {
+                                console.log(response.data[i])
+                                this.times.push(response.data[i])
+                                this.times_corrected.push(response.data[i])
+                            }
+                        }
                     }, (error) => { console.log(error) })
             }
         }),
