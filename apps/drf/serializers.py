@@ -9,11 +9,11 @@ class WorkingTimeSerializer(serializers.ModelSerializer):
     users_time = serializers.HyperlinkedRelatedField(many=False, view_name='userprofile-detail', read_only=True)
     name = serializers.ReadOnlyField(source='users_time.name')
     last_name = serializers.ReadOnlyField(source='users_time.last_name')
-    start_working = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%S")
-    end_working = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%S")
-    start_working_corrected = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    end_working_corrected = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    corrected_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    start_working = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    end_working = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    start_working_corrected = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
+    end_working_corrected = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
+    corrected_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
 
     class Meta:
         model = WorkingTime

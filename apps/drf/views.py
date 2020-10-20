@@ -49,7 +49,7 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
         workingtime = self.get_object()
         user = get_object_or_404(UserProfile, pk=workingtime.users_time.pk)
         tz = pytz.timezone('Poland')
-        time_format = "%Y-%m-%d %H:%M:%S"
+        time_format = "%Y-%m-%d %H:%M"
         if request.data['ending_work']:
             workingtime.done_working = True
             user.at_work = False

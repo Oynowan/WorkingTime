@@ -30,7 +30,7 @@ SECRET_KEY = '$q!$%cafkib*biw5d7uxm4aj#aw3lt6xz4pr_vg$afrh$832gd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['workingsite-app.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['workingsite-app.herokuapp.com', '127.0.0.1', '0.0.0.0', '192.168.0.22']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'frontpage'
