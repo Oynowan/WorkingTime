@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'apps.workingtime',
     'apps.tips',
     'apps.confirmations',
+    'apps.drf',
 
 ]
 
@@ -160,6 +161,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # DB
-
 prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
