@@ -122,17 +122,17 @@ Profile |
                     </div>
                     <span style="display: inline-block; height: 3rem"></span>
                     <div v-show="seen">
-                    <div v-for="time in times" v-if="time.owner === '{{user_profile.user.username}}'">
+                    <div v-for="(time, index) in times" v-if="time.owner === '{{user_profile.user.username}}'">
                         <span class="span-row"></span>
                         <div class="table-row">
                             <div class="table-column" style="width: 18rem">
-                                [[time.start_working]]
+                                <input class="input is-small" v-model="times[index].start_working"  type="datetime-local" style="text-align: center; width: auto;" >
                             </div>
                             <div class="table-column" v-if="!time.done_working" style="width: 18rem">
                                 Currently at work
                             </div>
                             <div class="table-column" v-else style="width: 18rem">
-                                [[time.end_working]]
+                                <input class="input is-small" v-model="times[index].end_working"  type="datetime-local" style="text-align: center; width: auto;" >
                             </div>
                             <div class="table-column" style="width: 8rem; text-align: right">
                                 [[time.worked_time]]
@@ -173,6 +173,11 @@ Profile |
                                                     [[time.corrected_at]]
                                                   </div>
                                                   <hr class="dropdown-divider">
+                                                    <div class="dropdown-item">
+                                                      <a @click="sendCorrected(time.id, index)" style="color: hsl(0, 0%, 21%)">
+                                                      <strong>CORRECT <ion-icon name="trash-outline"></ion-icon></strong>
+                                                    </a>
+                                                  </div>
                                                   <div id="frontpage-link" class="dropdown-item">
                                                       <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
                                                       <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
@@ -216,8 +221,9 @@ Profile |
        delimiters: ['[[',']]'],
        data () {
            return {
-               times: '',
-               seen: false
+               times: [],
+               times_corrected: [],
+               seen: false,
            }
        },
         mounted () {
@@ -228,6 +234,7 @@ Profile |
                 axios.get('/api/workingtime/')
                 .then(response => {
                     this.times = response.data
+                    this.times_corrected = response.data
                 })
             },
             delTime: function (id) {
@@ -238,7 +245,31 @@ Profile |
                     },
                 })
                 .then(response => this.getTimes())
-            }
+            },
+            sendCorrected: function (id, index) {
+                console.log(id);
+                var time = this.times[index];
+                var time_corrected = this.times_corrected[index];
+                axios.put('/api/workingtime/'+id+'/', {
+                    'start_working': time.start_working,
+                    'start_working_corrected': time_corrected.start_working,
+                    'end_working': time.end_working,
+                    'end_working_corrected': time_corrected.end_working,
+                    'checked_by_supervisor': true,
+                    'is_approved_by_supervisor': false,
+                    'index': index,
+                    'ending_work': false
+                },
+                    {
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}'
+                    }
+                }).then(response => {
+                    this.over = response.data['over'];
+                    console.log('Corrected!')
+                    this.getTimes();
+                }, 	(error) => { console.log(error) })
+            },
         }
     });
     new Vue ({
