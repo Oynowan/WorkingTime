@@ -32,12 +32,19 @@
                             <td>[[time.worked_time]]</td>
                         </tr>
                         <tr>
+                            <th>Note:</th>
+                            <td>
+                                <input class="input is-small" maxlength="100" type="text"
+                                       placeholder="Max: 100 characters" v-model="noteTime[index]">
+                            </td>
+                        </tr>
+                        <tr>
                             <th>
                                 <div style="display: inline-block; background: #00D000; border-radius: 8px">Confirm</div>
                                 <div style="display: inline-block; background: #ff4444; border-radius: 8px">Correct</div>
                             </th>
                             <td>
-                                <button class="button is-success" @click="confirmTime(time.id)">
+                                <button class="button is-success" @click="confirmTime(time.id, index)">
                                 <ion-icon name="checkmark-outline"></ion-icon></button>
                                 <button type="submit" class="button is-danger" @click="sendCorrected(time.id,index)">
                                     <ion-icon name="close-outline"></ion-icon></button>
@@ -70,7 +77,8 @@
             return {
                 times: [],
                 times_corrected: [],
-                over: ''
+                over: '',
+                noteTime: []
             }
         },
         mounted () {
@@ -90,7 +98,8 @@
                     'checked_by_supervisor': true,
                     'is_approved_by_supervisor': false,
                     'index': index,
-                    'ending_work': false
+                    'ending_work': false,
+                    'note_time': this.noteTime[index]
                 },
                     {
                     headers: {
@@ -102,11 +111,12 @@
                     this.getTime();
                 }, 	(error) => { console.log(error) })
             },
-            confirmTime: function (id) {
+            confirmTime: function (id, index) {
                 axios.put('/api/workingtime/'+id+'/', {
                     'checked_by_supervisor': true,
                     'is_approved_by_supervisor': true,
-                    'ending_work': false
+                    'ending_work': false,
+                    'note_time': this.noteTime[index],
                     },
                     {
                     method: 'PUT',
@@ -126,6 +136,7 @@
                     .then(response => {
                         this.times = [];
                         for (i=0; i < response.data.length; i++) {
+                            this.noteTime.push('')
                             if (!response.data[i].checked_by_supervisor && response.data[i].done_working) {
                                 console.log(response.data[i])
                                 this.times.push(response.data[i])

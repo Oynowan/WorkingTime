@@ -15,6 +15,7 @@ class WorkingTime(models.Model):
     end_working = models.DateTimeField(auto_now_add=True)
     end_working_corrected = models.DateTimeField(auto_now_add=True)
     corrected = models.BooleanField(default=False)
+    notes = models.CharField(max_length=100, default='', blank=True, null=True)
 
     worked_time = models.CharField(max_length=255, default='', null=True, blank=True)
     worked_time_corrected = models.CharField(max_length=255, default='', null=True, blank=True)
@@ -31,3 +32,4 @@ class WorkingTime(models.Model):
 
     def __str__(self):
         return f'{self.users_time.name} Date: {self.start_working.month}.{self.start_working.day}'
+

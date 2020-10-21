@@ -20,7 +20,7 @@ class WorkingTimeSerializer(serializers.ModelSerializer):
         fields = ['id', 'users_time', 'owner', 'start_working', 'start_working_corrected', 'end_working',
                   'end_working_corrected', 'corrected', 'worked_time', 'worked_time_corrected', 'done_working',
                   'checked_by_supervisor', 'is_approved_by_supervisor', 'name', 'last_name', 'corrected_by',
-                  'corrected_at', 'worked_time_seconds']
+                  'corrected_at', 'worked_time_seconds', 'notes']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

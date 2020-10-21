@@ -19,20 +19,19 @@
                                 Corrected by Supervisor</div>
                             <span style="display: inline-block"></span>
                             <div id="get_time">
-                                <div v-for="time in times" v-if="time.owner === '{{request.user.username}}'">
-                                    <span class="span-row"></span>
+                                <div v-for="time in times" v-if="time.owner === '{{request.user.username}}'" style="border: solid black 1px; text-align: center; width: auto" >
                                     <div class="table-row">
-                                        <div class="table-column" style="width: 18rem">
-                                            [[time.start_working]]
+                                        <div class="table-column" style="width: 18rem; text-align: left">
+                                            <strong>Start:</strong> [[time.start_working]]
                                         </div>
-                                        <div class="table-column" v-if="!time.done_working" style="width: 18rem">
-                                            Currently at work
+                                        <div class="table-column" v-if="!time.done_working" style="width: 18rem;text-align: left">
+                                            <strong>Currently at work</strong>
                                         </div>
-                                        <div class="table-column" v-else style="width: 18rem">
-                                            [[time.end_working]]
+                                        <div class="table-column" v-else style="width: 18rem;text-align: left">
+                                            <strong>End:</strong> [[time.end_working]]
                                         </div>
-                                        <div class="table-column" style="width: 8rem; text-align: right">
-                                            [[time.worked_time]]
+                                        <div class="table-column" style="width: 8rem;text-align: left">
+                                            <strong>Time: </strong>[[time.worked_time]]
                                         </div>
                                         <div class="table-column_bulma">
                                             <div class="dropdown is-hoverable">
@@ -63,6 +62,9 @@
                                                   <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item is-active">
                                                     [[time.corrected_at]]
                                                   </div>
+                                                    <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item is-active">
+                                                        <strong>Note: </strong>[[time.notes]]
+                                                  </div>
                                                   <hr class="dropdown-divider">
                                                   <div id="frontpage-link" class="dropdown-item">
                                                       <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
@@ -74,19 +76,27 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="table-row" v-if="time.corrected" style="color: red">
-                                        <div class="table-column" style="width: 18rem">
-                                            [[time.start_working_corrected]]
+                                    <div class="table-row" v-if="time.corrected" style="color: red; border-top: dashed black 1px" >
+                                        <div class="table-column" style="width: 18rem; text-align: left">
+                                            <strong>Start:</strong> [[time.start_working_corrected]]
                                         </div>
-                                        <div class="table-column" style="width: 18rem">
-                                            [[time.end_working_corrected]]
+                                        <div class="table-column" style="width: 18rem;text-align: left">
+                                            <strong>End:</strong> [[time.end_working_corrected]]
                                         </div>
-                                        <div class="table-column" style="width: 8rem; text-align: right">
-                                            [[time.worked_time_corrected]]
+                                        <div class="table-column" style="width: 8rem;text-align: left">
+                                            <strong>Time: </strong>[[time.worked_time_corrected]]
+                                        </div>
+                                        <div class="table-column" style="width: 8rem;">
+                                            Original Time
                                         </div>
                                     </div>
                                 </div>
-                            <span class="span-row"></span>
+                                <div class="table-row" style="width: auto; text-align: right ">
+                                        <div class="table-column" >
+                                            <strong>Total:</strong> {{total_time}}
+                                        </div>
+                                </div>
+
                             </div>
 
                 {% else %}

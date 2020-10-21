@@ -14,11 +14,21 @@ def frontpage(request):
         if not request.user.userprofile.fully_registered:
             return redirect('user_profile_ui', request.user.username)
         work_dates = WorkingTime.objects.filter(users_time=request.user.userprofile)
+        total_time = 0
+        for work in work_dates:
+            total_time += work.worked_time_seconds
+        hour = 0
+        while total_time > 60:
+            hour += 1
+            total_time -= 60
+        total_time_ = f'{hour}h {total_time}min'
+        print(total_time_)
     else:
         work_dates = ['AnonymousUser']
-
+        total_time_ = '00:00'
     context = {
         'work_dates': work_dates,
+        'total_time': total_time_
     }
     return render(request, 'core/frontpage.html', context)
 

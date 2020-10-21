@@ -61,6 +61,7 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 end_work = workingtime.start_working + timedelta(hours=10)
                 workingtime.end_working = end_work
                 workingtime.worked_time = 'Worked to much, default time added. 10h'
+                workingtime.worked_time_seconds = 600
             elif time[1] < 0:
                 print('cant work into the past')
                 return Response({'over': True, 'success': True})
@@ -89,14 +90,21 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
 
                 if total_minutes[1] <= 0:
                     return Response({'over': True, 'success': True})
-                workingtime.worked_time_seconds = total_minutes[1]
-                workingtime.start_working_corrected = workingtime.start_working
-                workingtime.end_working_corrected = workingtime.end_working
-                workingtime.start_working = utc_time1
-                workingtime.end_working = utc_time2
-                workingtime.worked_time_corrected = workingtime.worked_time
-                workingtime.worked_time = total_minutes[0]
-                workingtime.checked_by_supervisor = True
+                if workingtime.checked_by_supervisor:
+                    workingtime.start_working = utc_time1
+                    workingtime.end_working = utc_time2
+                    workingtime.worked_time = total_minutes[0]
+                    workingtime.worked_time_seconds = total_minutes[1]
+                else:
+                    workingtime.worked_time_seconds = total_minutes[1]
+                    workingtime.start_working_corrected = workingtime.start_working
+                    workingtime.end_working_corrected = workingtime.end_working
+                    workingtime.start_working = utc_time1
+                    workingtime.end_working = utc_time2
+                    workingtime.worked_time_corrected = workingtime.worked_time
+                    workingtime.worked_time = total_minutes[0]
+                    workingtime.checked_by_supervisor = True
+                print(request.data['note_time'])
                 workingtime.corrected = True
                 workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
                 workingtime.corrected_at = timezone.now()
@@ -107,6 +115,7 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 workingtime.is_approved_by_supervisor = True
                 workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
                 workingtime.corrected_at = timezone.now()
+            workingtime.notes = request.data['note_time']
 
         workingtime.save()
         return Response({'over': False, 'success': True})
