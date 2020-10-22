@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from ..userprofile.models import UserProfile
 from ..workingtime.models import WorkingTime
 from ..logs.models import WorkingChangeLogs
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 # Create your views here.
@@ -46,8 +46,8 @@ def u_logs(request, pk):
     logs = WorkingTime.objects.filter(users_time=userprofile)
     logs_file.write(f'LOGS: {userprofile.name} {userprofile.last_name}\n\n')
     for log in logs:
-        logs_file.write(f'Start: {datetime.strftime(log.start_working, format)}\nEnd: '
-                        f'{datetime.strftime(log.end_working, format)}\nWorked Time: '
+        logs_file.write(f'Start: {datetime.strftime(log.start_working + timedelta(hours=2) , format)}\nEnd: '
+                        f'{datetime.strftime(log.end_working + timedelta(hours=2), format)}\nWorked Time: '
                         f'{log.worked_time}\n\n')
     logs_file.close()
     return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/u_logs/u_logs.txt")}', {'pk': pk})
