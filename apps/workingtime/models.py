@@ -15,7 +15,6 @@ class WorkingTime(models.Model):
     end_working = models.DateTimeField(auto_now_add=True)
     end_working_corrected = models.DateTimeField(auto_now_add=True)
     corrected = models.BooleanField(default=False)
-    notes = models.CharField(max_length=100, default='', blank=True, null=True)
 
     worked_time = models.CharField(max_length=255, default='', null=True, blank=True)
     worked_time_corrected = models.CharField(max_length=255, default='', null=True, blank=True)
@@ -24,8 +23,6 @@ class WorkingTime(models.Model):
     # Supervisor approval
     checked_by_supervisor = models.BooleanField(default=False)
     is_approved_by_supervisor = models.BooleanField(default=False)
-    corrected_by = models.CharField(max_length=100, blank=True, null=True)
-    corrected_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ('-start_working',)

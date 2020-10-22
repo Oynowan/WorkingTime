@@ -38,38 +38,57 @@
                                               <div class="dropdown-trigger">
                                                 <div v-if="time.checked_by_supervisor">
                                                 <div v-if="time.is_approved_by_supervisor" style="width: 8rem">
-                                                    <button class="button is-success" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="checkmark-outline"></ion-icon><span class="icon is-small">
+                                                    <button class="button is-success is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="checkmark-outline"></ion-icon><span class="icon is-small">
                                                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                                                   </span></button>
                                                 </div>
                                                 <div v-else style="width: 8rem">
-                                                    <button class="button is-danger" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="close-outline"></ion-icon><span class="icon is-small">
+                                                    <button class="button is-danger is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="close-outline"></ion-icon><span class="icon is-small">
                                                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                                                   </span></button>
                                                 </div>
                                             </div>
                                             <div v-else style="width: 8rem">
-                                                <button class="button is-warning" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
+                                                <button class="button is-warning is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
                                                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                                                   </span></button>
                                             </div>
                                               </div>
                                               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
-                                                  <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item">
-                                                    [[time.corrected_by]]
-                                                  </div>
-                                                  <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item is-active">
-                                                    [[time.corrected_at]]
-                                                  </div>
-                                                    <div v-if="time.corrected || time.is_approved_by_supervisor" class="dropdown-item is-active">
-                                                        <strong>Note: </strong>[[time.notes]]
-                                                  </div>
-                                                  <hr class="dropdown-divider">
                                                   <div id="frontpage-link" class="dropdown-item">
                                                       <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
                                                       <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
                                                   </a>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="dropdown is-hoverable is-right">
+                                              <div class="dropdown-trigger">
+                                                <button class="button is-small is-dark" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                  <span><strong>LOGS</strong></span>
+                                                  <span class="icon is-small">
+                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                  </span>
+                                                </button>
+                                              </div>
+                                              <div class="dropdown-menu" id="dropdown-menu-logs" role="menu">
+                                                <div class="dropdown-content">
+                                                  <div v-for="change in changed_times_logs" v-if="change.workingtime === time.id" class="dropdown-item">
+                                                      <div>
+                                                          <strong>Changed by:</strong>
+                                                          <br>[[change.changed_by]]
+                                                          <br><strong>Changed at:</strong>
+                                                          <br>[[change.changed_at]]
+                                                          <br><strong>Start:</strong>
+                                                          <br>[[change.time_start]]
+                                                          <br><strong>End:</strong>
+                                                          <br>[[change.time_end]]
+                                                          <br><strong>Note:</strong>
+                                                          <br>[[change.notes]]
+                                                      </div>
+                                                      <hr class="dropdown-divider">
                                                   </div>
                                                 </div>
                                               </div>
@@ -89,6 +108,7 @@
                                         <div class="table-column" style="width: 8rem;">
                                             Original Time
                                         </div>
+                                        <div class="table-column_bulma" style="width: 5rem"></div>
                                     </div>
                                 </div>
                                 <div class="table-row" style="width: auto; text-align: right ">
@@ -124,6 +144,7 @@
             return {
                 times: '',
                 same_:false,
+                changed_times_logs: []
             }
         },
         mounted () {
@@ -134,6 +155,19 @@
                 axios.get('/api/workingtime/')
                 .then(response => {
                     this.times = response.data
+                    this.changes_logs(response.data)
+                })
+            },
+            changes_logs: function (times) {
+               axios.get('/api/workingtime/change_logs/')
+                .then(response => {
+                    for (j=0;j<times.length;j++){
+                        for (i=0;i<response.data.length;i++) {
+                            if (response.data[i].workingtime === times[j].id) {
+                                this.changed_times_logs.push(response.data[i])
+                            }
+                        }
+                    }
                 })
             },
             delTime: function (id) {

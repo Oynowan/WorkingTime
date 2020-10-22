@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .permissions import IsOwnerSupervisorOrReadOnlyUserProfile, IsOwnerSupervisorOrReadOnlyWorkingTime
-from .serializers import WorkingTimeSerializer, UserProfileSerializer
+from .serializers import WorkingTimeSerializer, UserProfileSerializer, WorkingChangeLogsSerializer
 # Workingtime app
 from ..workingtime.models import WorkingTime
 # Userprofile app
@@ -28,7 +28,8 @@ from datetime import timedelta
 def api_root(request, format=None):
     return Response({
         'users': reverse('userprofile-list', request=request, format=format),
-        'workingtime': reverse('workingtime-list', request=request, format=format)
+        'workingtime': reverse('workingtime-list', request=request, format=format),
+        'change_logs': reverse('change-logs', request=request, format=format)
     })
 
 
@@ -90,8 +91,11 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 utc_time2 = tz.localize(time2, is_dst=None).astimezone(pytz.utc)
                 total_minutes = time_count(time1, time2)
                 WorkingChangeLogs.objects.create(workingtime=workingtime,
-                                                 time_changes=f'Start: {time1}\nEnd: {time2}\nNote: '
-                                                              f'{request.data["note_time"]}')
+                                                 notes=f'{request.data["note_time"]}',
+                                                 time_start=time1,
+                                                 time_end=time2,
+                                                 changed_by=f'{request.user.userprofile.name} - {request.user.userprofile.last_name}',
+                                                 changed_at=datetime.strftime(datetime.now(), time_format))
 
                 if total_minutes[1] <= 0:
                     return Response({'over': True, 'success': True})
@@ -111,21 +115,19 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                     workingtime.checked_by_supervisor = True
                 print(request.data['note_time'])
                 workingtime.corrected = True
-                workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
-                workingtime.corrected_at = timezone.now()
 
             # If time was checked by supervisor and approved
             elif request.data['checked_by_supervisor'] and request.data['is_approved_by_supervisor']:
                 workingtime.checked_by_supervisor = True
                 workingtime.is_approved_by_supervisor = True
-                workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
-                workingtime.corrected_at = timezone.now()
-                time1 = datetime.strptime(workingtime.start_working, time_format)
-                time2 = datetime.strptime(workingtime.end_working, time_format)
+                time1 = datetime.strftime(workingtime.start_working, time_format)
+                time2 = datetime.strftime(workingtime.end_working, time_format)
                 WorkingChangeLogs.objects.create(workingtime=workingtime,
-                                                 time_changes=f'Start: {time1}\nEnd: {time2}\nNote: '
-                                                              f'{request.data["note_time"]}')
-            workingtime.notes = request.data['note_time']
+                                                 notes=f'{request.data["note_time"]}',
+                                                 time_start=time1,
+                                                 time_end=time2,
+                                                 changed_by=f'{request.user.userprofile.name} - {request.user.userprofile.last_name}',
+                                                 changed_at=datetime.strftime(datetime.now(), time_format))
 
         workingtime.save()
         return Response({'over': False, 'success': True})
@@ -157,3 +159,18 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
         userprofile.save()
 
         return Response({'success': True})
+
+
+class WorkingChangeLogsList(generics.ListCreateAPIView):
+    queryset = WorkingChangeLogs.objects.all()
+    serializer_class = WorkingChangeLogsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerSupervisorOrReadOnlyUserProfile]
+
+
+class WorkingChangeLogsDetail(generics.RetrieveAPIView):
+    queryset = WorkingChangeLogs.objects.all()
+    serializer_class = WorkingChangeLogsSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerSupervisorOrReadOnlyUserProfile]
+
