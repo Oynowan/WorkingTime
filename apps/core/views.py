@@ -65,5 +65,3 @@ class SearchResultView(ListView):
             object_list.append(UserProfile.objects.filter(Q(name__icontains=query) | Q(last_name__icontains=query)))
         is_valid_ = object_list[0].exists()
         return {'object_list': object_list, 'query': query, 'is_valid': is_valid_}
-
-

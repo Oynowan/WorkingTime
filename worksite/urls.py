@@ -39,4 +39,7 @@ urlpatterns = [
     #
     # DRF Api
     path('', include('apps.drf.urls')),
+    #
+    # Logs App
+    path('', include('apps.logs.urls')),
 ]

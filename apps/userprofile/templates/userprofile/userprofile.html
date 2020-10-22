@@ -232,6 +232,10 @@ Profile |
                                         </div>
                                     </div>
                                 </div>
+                        <div style="text-align: right; margin-top: 1rem">
+                        <a class="button is-dark" href="{% url 'u_logs' user_profile.pk %}"
+                           download="{{user_profile.name}}{{user_profile.last_name}}logs"><strong>Download Logs</strong></a>
+                    </div>
                         </div>
                 </div>
             {% endif %}

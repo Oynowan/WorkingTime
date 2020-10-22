@@ -5,6 +5,8 @@ from .serializers import WorkingTimeSerializer, UserProfileSerializer
 from ..workingtime.models import WorkingTime
 # Userprofile app
 from ..userprofile.models import UserProfile
+# Logs app
+from ..logs.models import WorkingChangeLogs
 # RestFramework
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -87,6 +89,9 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 utc_time1 = tz.localize(time1, is_dst=None).astimezone(pytz.utc)
                 utc_time2 = tz.localize(time2, is_dst=None).astimezone(pytz.utc)
                 total_minutes = time_count(time1, time2)
+                WorkingChangeLogs.objects.create(workingtime=workingtime,
+                                                 time_changes=f'Start: {time1}\nEnd: {time2}\nNote: '
+                                                              f'{request.data["note_time"]}')
 
                 if total_minutes[1] <= 0:
                     return Response({'over': True, 'success': True})
@@ -115,6 +120,11 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 workingtime.is_approved_by_supervisor = True
                 workingtime.corrected_by = f'{request.user.userprofile.name} {request.user.userprofile.last_name}'
                 workingtime.corrected_at = timezone.now()
+                time1 = datetime.strptime(workingtime.start_working, time_format)
+                time2 = datetime.strptime(workingtime.end_working, time_format)
+                WorkingChangeLogs.objects.create(workingtime=workingtime,
+                                                 time_changes=f'Start: {time1}\nEnd: {time2}\nNote: '
+                                                              f'{request.data["note_time"]}')
             workingtime.notes = request.data['note_time']
 
         workingtime.save()

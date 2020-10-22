@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'apps.tips',
     'apps.confirmations',
     'apps.drf',
+    'apps.logs',
 
 ]
 
