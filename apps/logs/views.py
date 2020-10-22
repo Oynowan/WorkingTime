@@ -15,11 +15,7 @@ from ..core.static.decorators import supervisor_member_required
 def wt_logs(request, pk):
     format = '%Y-%m-%d %H:%M'
     working_time = get_object_or_404(WorkingTime, pk=pk)
-    #path_logs = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/')
     file_log = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/wt_logs.txt')
-    #if not os.path.exists(path_logs):
-    #    os.mkdir(path_logs)
-
     logs_file = open(file_log, 'w')
     logs = WorkingChangeLogs.objects.filter(workingtime=working_time)
     logs_file.write(f'{working_time.users_time.name} {working_time.users_time.last_name} time '
@@ -46,9 +42,7 @@ def u_logs(request, pk):
     logs = WorkingTime.objects.filter(users_time=userprofile)
     logs_file.write(f'LOGS: {userprofile.name} {userprofile.last_name}\n\n')
     for log in logs:
-        logs_file.write(f'Changed by: {request.user.userprofile.name} {request.user.userprofile.last_name}\n\n'
-                        f'At: {datetime.strftime(datetime.now(), format)}'
-                        f'Start: {datetime.strftime(log.start_working + timedelta(hours=2) , format)}\nEnd: '
+        logs_file.write(f'\nStart: {datetime.strftime(log.start_working + timedelta(hours=2) , format)}\nEnd: '
                         f'{datetime.strftime(log.end_working + timedelta(hours=2), format)}\nWorked Time: '
                         f'{log.worked_time}\n\n')
     logs_file.close()
