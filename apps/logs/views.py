@@ -15,10 +15,10 @@ from ..core.static.decorators import supervisor_member_required
 def wt_logs(request, pk):
     format = '%Y-%m-%d %H:%M'
     working_time = get_object_or_404(WorkingTime, pk=pk)
-    path_logs = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/')
+    #path_logs = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/')
     file_log = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/{pk}logs.txt')
-    if not os.path.exists(path_logs):
-        os.mkdir(path_logs)
+    #if not os.path.exists(path_logs):
+    #    os.mkdir(path_logs)
 
     logs_file = open(file_log, 'w')
     logs = WorkingChangeLogs.objects.filter(workingtime=working_time)
@@ -37,10 +37,10 @@ def wt_logs(request, pk):
 def u_logs(request, pk):
     format = '%Y-%m-%d %H:%M'
     userprofile = get_object_or_404(UserProfile, pk=pk)
-    path_logs = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/')
+    # path_logs = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/')
     file_log = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/{pk}logs.txt')
-    if not os.path.exists(path_logs):
-        os.mkdir(path_logs)
+    # if not os.path.exists(path_logs):
+    #    os.mkdir(path_logs)
 
     logs_file = open(file_log, 'w')
     logs = WorkingTime.objects.filter(users_time=userprofile)
