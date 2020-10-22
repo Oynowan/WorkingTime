@@ -16,7 +16,7 @@ def wt_logs(request, pk):
     format = '%Y-%m-%d %H:%M'
     working_time = get_object_or_404(WorkingTime, pk=pk)
     #path_logs = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/')
-    file_log = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/{pk}logs.txt')
+    file_log = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/wt_logs.txt')
     #if not os.path.exists(path_logs):
     #    os.mkdir(path_logs)
 
@@ -29,7 +29,7 @@ def wt_logs(request, pk):
     for log in logs:
         logs_file.write(f'{log.time_changes}\n\n')
     logs_file.close()
-    return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/t_logs/{pk}logs.txt")}', {'pk': pk})
+    return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/t_logs/wt_logs.txt")}', {'pk': pk})
 
 
 # Users all time Logs
@@ -38,7 +38,7 @@ def u_logs(request, pk):
     format = '%Y-%m-%d %H:%M'
     userprofile = get_object_or_404(UserProfile, pk=pk)
     # path_logs = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/')
-    file_log = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/{pk}logs.txt')
+    file_log = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/u_logs.txt')
     # if not os.path.exists(path_logs):
     #    os.mkdir(path_logs)
 
@@ -50,5 +50,5 @@ def u_logs(request, pk):
                         f'{datetime.strftime(log.end_working, format)}\nWorked Time: '
                         f'{log.worked_time}\n\n')
     logs_file.close()
-    return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/u_logs/{pk}logs.txt")}', {'pk': pk})
+    return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/u_logs/u_logs.txt")}', {'pk': pk})
 
