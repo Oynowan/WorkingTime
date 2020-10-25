@@ -13,4 +13,5 @@ urlpatterns = [
     # API
     path('api/get_not_confirmed_number/', api.api_get_not_confirmed_yet, name='api_get_not_confirmed_yet'),
     path('api/get_not_confirmed_time/', api.api_get_not_confirmed_time, name='api_get_not_confirmed_time'),
+
 ]

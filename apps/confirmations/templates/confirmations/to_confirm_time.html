@@ -1,15 +1,14 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 
 {% block content %}
 
-<div class="container">
-    <div class="columns">
-        <div class="column is-12">
-            <h1 class="title">TIME</h1>
+    <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="col-12">
+            <h1>TIME</h1>
             <span class="span-row" style="width: 100%"></span>
             <div id="confirm_time">
                 <div v-if="times.length">
-                <table class="table" style="background: #f5f5f5">
+                <table class="table bg-light">
                     <tbody v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true">
                     <tr>
                             <th>Employee:</th>
@@ -44,9 +43,9 @@
                                 <div style="display: inline-block; background: #ff4444; border-radius: 8px">Correct</div>
                             </th>
                             <td>
-                                <button class="button is-success" @click="confirmTime(time.id, index)">
+                                <button class="btn bg-success" @click="confirmTime(time.id, index)">
                                 <ion-icon name="checkmark-outline"></ion-icon></button>
-                                <button type="submit" class="button is-danger" @click="sendCorrected(time.id,index)">
+                                <button type="submit" class="btn bg-danger" @click="sendCorrected(time.id,index)">
                                     <ion-icon name="close-outline"></ion-icon></button>
                             </td>
                         </tr>
@@ -58,14 +57,13 @@
                 </table>
                     </div>
                 <div v-else>
-                    <h2 class="subtitle is-4">
+                    <h4>
                         No new working times to confirm.
-                    </h2>
+                    </h4>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script %}

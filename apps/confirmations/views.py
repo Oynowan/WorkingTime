@@ -9,18 +9,27 @@ from django.db.models import Q
 
 @supervisor_member_required()
 def to_confirm(request):
+    if request.user.is_authenticated:
+        if not request.user.userprofile.fully_registered:
+            return redirect('user_profile_ui', request.user.username)
     to_confirm_employees = UserProfile.objects.filter(Q(checked_account=False), Q(fully_registered=True))
     return render(request, 'confirmations/to_confirm.html', {'to_confirm': to_confirm_employees})
 
 
 @supervisor_member_required()
 def to_confirm_time(request):
+    if request.user.is_authenticated:
+        if not request.user.userprofile.fully_registered:
+            return redirect('user_profile_ui', request.user.username)
     # to_confirm_times = WorkingTime.objects.filter(Q(checked_by_supervisor=False), Q(done_working=True))
     return render(request, 'confirmations/to_confirm_time.html')
 
 
 @supervisor_member_required()
 def correcting_time(request, time_id):
+    if request.user.is_authenticated:
+        if not request.user.userprofile.fully_registered:
+            return redirect('user_profile_ui', request.user.username)
     working = get_object_or_404(WorkingTime, pk=int(time_id))
     s_working = timezone.localtime(working.start_working)
     e_working = timezone.localtime(working.end_working)

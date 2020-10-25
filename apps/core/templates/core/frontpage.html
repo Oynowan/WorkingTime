@@ -1,16 +1,18 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 {% load static %}
 {% block navbar %}
 
 {% endblock %}
 {% block content %}
-<div class="container">
-    <div class="columns">
-        <div class="column is-12">
-            <h1 class="title">Work, Work, Work!</h1><br>
+<div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+    <div class="col-12">
+
                 {% if request.user.is_authenticated %}
-                        <h2 class="subtitle is-5">You can delete working times by pressing X button. <br>Deleted times cant be restored, so be careful.</h2>
-                            <div></div>
+                        <h2>Welcome back {{ request.user.userprofile.name}} {{request.user.userprofile.last_name}}</h2><br>
+                        <h4>You can delete working times by pressing <ion-icon name="trash-outline"></ion-icon>.
+                            <br>You can check logs of changes under <ion-icon name="reader-outline"></ion-icon>.
+                            <br>Deleted times cant be restored, so be careful.</h4>
+                            <div style="margin-bottom: 5rem"></div>
                             <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
                                 Waiting for approve/still at work</div>
                             <div style="background: hsl(141, 53%, 53%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
@@ -19,120 +21,92 @@
                                 Corrected by Supervisor</div>
                             <span style="display: inline-block"></span>
                             <div id="get_time">
-                                <div v-for="time in times" v-if="time.owner === '{{request.user.username}}'" style="border: solid black 1px; text-align: center; width: auto" >
-                                    <div class="table-row">
-                                        <div class="table-column" style="width: 18rem; text-align: left">
-                                            <strong>Start:</strong> [[time.start_working]]
-                                        </div>
-                                        <div class="table-column" v-if="!time.done_working" style="width: 18rem;text-align: left">
-                                            <strong>Currently at work</strong>
-                                        </div>
-                                        <div class="table-column" v-else style="width: 18rem;text-align: left">
-                                            <strong>End:</strong> [[time.end_working]]
-                                        </div>
-                                        <div class="table-column" style="width: 8rem;text-align: left">
-                                            <strong>Time: </strong>[[time.worked_time]]
-                                        </div>
-                                        <div class="table-column_bulma">
-                                            <div class="dropdown is-hoverable">
-                                              <div class="dropdown-trigger">
-                                                <div v-if="time.checked_by_supervisor">
-                                                <div v-if="time.is_approved_by_supervisor" style="width: 8rem">
-                                                    <button class="button is-success is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="checkmark-outline"></ion-icon><span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span></button>
-                                                </div>
-                                                <div v-else style="width: 8rem">
-                                                    <button class="button is-danger is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="close-outline"></ion-icon><span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span></button>
-                                                </div>
-                                            </div>
-                                            <div v-else style="width: 8rem">
-                                                <button class="button is-warning is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span></button>
-                                            </div>
-                                              </div>
-                                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                                <div class="dropdown-content">
-                                                  <div id="frontpage-link" class="dropdown-item">
-                                                      <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
-                                                      <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
-                                                  </a>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            <div class="dropdown is-hoverable is-right">
-                                              <div class="dropdown-trigger">
-                                                <button class="button is-small is-dark" aria-haspopup="true" aria-controls="dropdown-menu">
-                                                  <span><strong>LOGS</strong></span>
-                                                  <span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span>
-                                                </button>
-                                              </div>
-                                              <div class="dropdown-menu" id="dropdown-menu-logs" role="menu">
-                                                <div class="dropdown-content">
-                                                  <div v-for="change in changed_times_logs" v-if="change.workingtime === time.id" class="dropdown-item">
-                                                      <div>
-                                                          <strong>Changed by:</strong>
-                                                          <br>[[change.changed_by]]
-                                                          <br><strong>Changed at:</strong>
-                                                          <br>[[change.changed_at]]
-                                                          <br><strong>Start:</strong>
-                                                          <br>[[change.time_start]]
-                                                          <br><strong>End:</strong>
-                                                          <br>[[change.time_end]]
-                                                          <br><strong>Note:</strong>
-                                                          <br>[[change.notes]]
-                                                      </div>
-                                                      <hr class="dropdown-divider">
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="table-row" v-if="time.corrected" style="color: red; border-top: dashed black 1px" >
-                                        <div class="table-column" style="width: 18rem; text-align: left">
-                                            <strong>Start:</strong> [[time.start_working_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 18rem;text-align: left">
-                                            <strong>End:</strong> [[time.end_working_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 8rem;text-align: left">
-                                            <strong>Time: </strong>[[time.worked_time_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 8rem;">
-                                            Original Time
-                                        </div>
-                                        <div class="table-column_bulma" style="width: 5rem"></div>
-                                    </div>
-                                </div>
-                                <div class="table-row" style="width: auto; text-align: right ">
-                                        <div class="table-column" >
-                                            <strong>Total:</strong> {{total_time}}
-                                        </div>
-                                </div>
+                                    <div id="time">
+                                        <div class="table-responsive" style="min-height: 50rem">
+                                            <table class="table">
+                                                <thead class="thead-dark">
+                                                    <th>Start</th>
+                                                    <th>End</th>
+                                                    <th>Time</th>
+                                                    <th>Logs</th>
+                                                    <th>Delete</th>
+                                                </thead>
+                                                <tbody v-for="time in times" v-if="time.owner === '{{request.user.username}}'" style="border-top: solid black 2px; border-bottom: solid black 2px">
+                                                    <tr>
+                                                        <td>[[time.start_working]]</td>
+                                                        <td v-if="!time.done_working">Currently at work</td>
+                                                        <td v-else>[[time.end_working]]</td>
+                                                        <td>[[time.worked_time]]</td>
+                                                        <td class="dropdown dropdown dropleft" style="margin-top: 0.2rem; margin-bottom: 0.2rem;">
+                                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownLogsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">
+                                                              <ion-icon name="reader-outline"></ion-icon>
+                                                            </button>
 
+                                                            <div class="dropdown-menu" aria-labelledby="dropdownLogsButton">
+                                                              <a v-for="change in changed_times_logs" v-if="change.workingtime === time.id" class="dropdown-item">
+                                                                  <div style="text-align: center">
+                                                                      <strong>Changed by:</strong>
+                                                                      <br>[[change.changed_by]]
+                                                                      <br><strong>Changed at:</strong>
+                                                                      <br>[[change.changed_at]]
+                                                                      <br><strong>Start:</strong>
+                                                                      <br>[[change.time_start]]
+                                                                      <br><strong>End:</strong>
+                                                                      <br>[[change.time_end]]
+                                                                      <br><strong>Note:</strong>
+                                                                      <br>[[change.notes]]
+                                                                  </div>
+                                                                  <hr class="dropdown-divider">
+                                                              </a>
+                                                            </div>
+                                                          </td>
+                                                        <td><span v-if="time.checked_by_supervisor">
+                                                            <span v-if="time.is_approved_by_supervisor">
+                                                                <button @click="delTime(time.id)" class="btn bg-success" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                                    <ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                            </span>
+                                                            <span v-else>
+                                                                <button @click="delTime(time.id)" class="btn bg-danger" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                            </span>
+                                                        </span>
+                                                        <span v-else>
+                                                            <button @click="delTime(time.id)" class="btn bg-warning" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                        </span></td>
+                                                    </tr>
+                                                <tr v-if="time.corrected" id="corrected" style="color: red">
+                                                    <td>[[time.start_working_corrected]]</td>
+                                                    <td>[[time.end_working_corrected]]</td>
+                                                    <td>[[time.worked_time_corrected]]</td>
+                                                    <td>Original Time</td>
+                                                    <td></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
                             </div>
+    </div>
 
                 {% else %}
+                    <h1>Hi there!</h1>
                     <ul>
-                        <li style="list-style-type: decimal"><h2 class="subtitle">Are you forgetting to write your working time?</h2></li>
-                        <li style="list-style-type: decimal"><h2 class="subtitle">Do you hate to make hundreds of pictures of workingplan?</h2></li>
-                        <li style="list-style-type: decimal"><h2 class="subtitle">Or maybe you are writing it on your mobilephone, which you can loose any time.</h2></li>
+                        <li style="list-style-type: decimal"><h4>Are you forgetting to write your working time?</h4></li>
+                        <li style="list-style-type: decimal"><h4>Do you hate to make hundreds of pictures of workingplan?</h4></li>
+                        <li style="list-style-type: decimal"><h4>Or maybe you are writing it on your mobilephone, which you can loose any time.</h4></li>
                     </ul><br>
-                    <h2 class="subtitle">If your answer for any of that questions was <strong>YES</strong>, that website is for you!<br>
+                    <h3>If your answer for any of that questions was <strong>YES</strong>, that website is for you!<br>
                         By single press button save your working time!<br>
-                    <strong>Sign up now</strong> and try it for yourself!</h2>
+                    <strong>Sign up</strong> now below and try it for yourself!</h3>
                 {% endif %}
-        </div>
-    </div>
 </div>
-<script type="javascript" src="."></script>
+</div>
+
 {% endblock %}
 
 {% block script %}

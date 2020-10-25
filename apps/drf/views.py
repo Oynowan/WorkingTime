@@ -70,9 +70,7 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 return Response({'over': True, 'success': True})
             else:
                 if request.data['break']:
-                    print(request.data['break'])
                     end = timezone.now() + timedelta(minutes=30)
-                    print('end')
                     time = time_count(workingtime.start_working, end)
                     workingtime.end_working = end
                 else:
@@ -86,20 +84,20 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 time2_ = request.data['end_working'].replace('T', ' ')
                 time1 = datetime.strptime(time1_, time_format)
                 time2 = datetime.strptime(time2_, time_format)
-                time = time_count(time1, time2)
                 utc_time1 = tz.localize(time1, is_dst=None).astimezone(pytz.utc)
                 utc_time2 = tz.localize(time2, is_dst=None).astimezone(pytz.utc)
                 total_minutes = time_count(time1, time2)
+                changed_at = datetime.now(pytz.timezone('Europe/Berlin'))
                 WorkingChangeLogs.objects.create(workingtime=workingtime,
                                                  notes=f'{request.data["note_time"]}',
-                                                 time_start=time1,
-                                                 time_end=time2,
+                                                 time_start=time1_,
+                                                 time_end=time2_,
                                                  changed_by=f'{request.user.userprofile.name} - {request.user.userprofile.last_name}',
-                                                 changed_at=datetime.strftime(datetime.now(), time_format))
+                                                 changed_at=datetime.strftime(changed_at, time_format))
 
                 if total_minutes[1] <= 0:
                     return Response({'over': True, 'success': True})
-                if workingtime.checked_by_supervisor:
+                if workingtime.checked_by_supervisor and workingtime.corrected:
                     workingtime.start_working = utc_time1
                     workingtime.end_working = utc_time2
                     workingtime.worked_time = total_minutes[0]
@@ -113,21 +111,23 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                     workingtime.worked_time_corrected = workingtime.worked_time
                     workingtime.worked_time = total_minutes[0]
                     workingtime.checked_by_supervisor = True
-                print(request.data['note_time'])
                 workingtime.corrected = True
 
             # If time was checked by supervisor and approved
             elif request.data['checked_by_supervisor'] and request.data['is_approved_by_supervisor']:
                 workingtime.checked_by_supervisor = True
                 workingtime.is_approved_by_supervisor = True
-                time1 = datetime.strftime(workingtime.start_working, time_format)
-                time2 = datetime.strftime(workingtime.end_working, time_format)
+                changed_at = datetime.now(pytz.timezone('Europe/Berlin'))
+                time1_ = workingtime.start_working.astimezone(pytz.timezone('Europe/Berlin'))
+                time2_ = workingtime.end_working.astimezone(pytz.timezone('Europe/Berlin'))
+                time1 = datetime.strftime(time1_, time_format)
+                time2 = datetime.strftime(time2_, time_format)
                 WorkingChangeLogs.objects.create(workingtime=workingtime,
                                                  notes=f'{request.data["note_time"]}',
                                                  time_start=time1,
                                                  time_end=time2,
                                                  changed_by=f'{request.user.userprofile.name} - {request.user.userprofile.last_name}',
-                                                 changed_at=datetime.strftime(datetime.now(), time_format))
+                                                 changed_at=datetime.strftime(changed_at, time_format))
 
         workingtime.save()
         return Response({'over': False, 'success': True})

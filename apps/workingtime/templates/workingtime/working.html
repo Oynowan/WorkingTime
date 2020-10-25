@@ -1,44 +1,43 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 
 {% block title %}Start |{%endblock%}
 {% load humanize %}
 
 {% block content %}
-    <div class="container">
-        <div class="columns">
-            <div class="column is-12">
+        <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+            <div class="col-12">
                 <div id="working-time">
                     <div v-if="!user.at_work">
                         <div v-if="!user.worked_today">
-                            <h2 class="subtitle is-3">
+                            <h2>
                                 <strong>
-                                    Press the button<br>to start counting<br>your work time!
+                                    Press the button to start counting your work time!
                                 </strong>
                             </h2>
-                            <button class="button is-success" @click="startWork()">Work</button>
+                            <button class="btn bg-success" @click="startWork()" style="float:right">START</button>
                         </div>
                         <div v-else>
-                            <h1 class="title">You have been working today!<br> </h1>
-                            <h2 class="subtitle is-5">[[latest_time.worked_time]]</h2>
+                            <h2>You have been working today!<br> </h2>
+                            <h4>[[latest_time.worked_time]]</h4>
                         </div>
                     </div>
                     <div v-else>
                         <div v-if="user.at_work && !user.worked_today">
-                            <h1 class="title">You are at work! Have a nice shift!</h1>
-                            <h2 class="subtitle is-4">If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
+                            <h1>You are at work! Have a nice shift!</h1>
+                            <h4>If your shift is over, <strong>and only than</strong>, press the red button to stop counting your time.<br>
                                 You can't start working again in the same day!<br>
-                                Check box if you didnt have a break.</h2>
-                            <div style="display: inline-block;">
+                                Check box if you didnt have a break.</h4>
+                            <h5><div style="display: inline-block; border-bottom: solid black 1px">
+                                <label><strong>Break</strong></label>
                                 <input v-model="break_" type="checkbox">
-                                Break
-                            </div><br>
-                            <button class="button is-danger" @click="stopWork()">Work</button>
+
+                            </div></h5>
+                            <button class="btn bg-danger" @click="stopWork()" style="float:right">STOP</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block script %}

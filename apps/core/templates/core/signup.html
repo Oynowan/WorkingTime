@@ -1,16 +1,14 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 
 {% block content %}
-    <div class="container">
-        <div class="columns">
-            <div class="column is-12">
-                <h1 class="title">Sign up</h1>
+        <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+            <div class="col-10">
+                <h1>Sign up</h1>
                 <form method="POST" action=".">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button class="button is-success" type="submit">Sign up</button>
+                    <button class="btn bg-success" type="submit">Sign up</button>
                 </form>
             </div>
         </div>
-    </div>
 {% endblock %}

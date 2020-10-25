@@ -1,81 +1,81 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 {% block title %}
 Profile |
 {% endblock %}
 {% block content %}
 
-<div class="container">
-    <div class="columns">
-        <div class="column is-12">
+    <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="col-12">
             <div class="form-wrapper" id="profile_" style="margin-bottom: 10px">
-                <h1 class="title">{{ user }}s profile</h1><br>
+                <h1>{{ user }}s profile</h1><br>
                 {% if user_profile.supervisor %}
                     {% if user_profile.user.is_staff %}
-                    <h2 class="subtitle is-5">Admin</h2>
+                    <h5>Admin</h5>
                     {% elif user_profile.manager %}
-                    <h2 class="subtitle is-5">Manager</h2>
+                    <h5>Manager</h5>
                     {% else %}
-                    <h2 class="subtitle is-5">Supervisor</h2>
+                    <h5>Supervisor</h5>
                     {% endif %}
                 {% elif not user_profile.supervisor and user_profile.confirmed_employee %}
-                <h2 class="subtitle is-5">Employee</h2>
+                <h5>Employee</h5>
                 {% else %}
-                <h2 class="subtitle is-5">Guest</h2>
+                <h5>Guest</h5>
                 {% endif %}
                 <!-- Changing Datas form -->
                 <form method="post" v-on:submit.prevent="saveChanges()">
-                    <table class="table" id="profile_table" style="background: #f5f5f5;">
-                    <thead>
+                    <div class="table-responsive">
+                    <table class="table" id="profile_table">
+                    <thead class="">
                         <th></th>
                         <th>{% if user_profile.name == '' or user_profile.last_name == '' or user_profile.department == 'Unspecify' %}
-                                <h2 class="subtitle" style="color: red">Fill up the required fields</h2>
+                                <h6 style="color: red; float: right">* Fill up the required fields</h6>
                             {% endif %}
                         </th>
                     </thead>
                     <tbody>
                             <tr>
                             {% if request.user.userprofile.supervisor %}
-                                <td><h2 class="subtitle is-5"><strong>Check if employee:</strong>&nbsp;</h2></td>
+                                <th>Check if employee:</th>
                                 <td><input type="checkbox" v-model="confirmed"></td>
                             {% else %}
-                                <td><h2 class="subtitle is-5"><strong>Employee:</strong>&nbsp;</h2></td>
+                                <th>Employee:</th>
                                 {% if user_profile.confirmed_employee %}
-                                    <td><h2 class="subtitle" style="color: green">Is confirmed</h2></td>
+                                    <td><h2 style="color: green">Is confirmed</h2></td>
                                 {% else %}
-                                    <td><h2 class="subtitle" style="color: red">Waiting for confirmation</h2></td>
+                                    <td><h2 style="color: red">Waiting for confirmation</h2></td>
                                 {% endif %}
                             {% endif %}
                         </tr>
                             {% if request.user.userprofile.manager %}
                             <tr>
-                                <td><h2 class="subtitle is-5"><strong>Supervisor:</strong>&nbsp;</h2></td>
+                                <th>Supervisor:</th>
                                 <td><input type="checkbox" v-model="confirmed_supervisor"></td>
                             </tr>
                             {% endif %}
                         <tr>
-                            <td><h2 class="subtitle is-5"><strong>Name:</strong>&nbsp;</h2></td>
+                            <th>Name:</th>
                             {% if user_profile.name == '' or request.user.userprofile.supervisor %}
-                            <td><input class="input" style="width: 10rem" typeof="text" v-model="name"
+                            <td><input class="input" typeof="text" v-model="name"
                                        v-bind:style="{border: styleColorName}" placeholder="Name"></td>
                             {% else %}
                             <td>{{user_profile.name}}</td>
                             {% endif %}
                         </tr>
                         <tr>
-                            <td><h2 class="subtitle is-5"><strong>Lastname:</strong>&nbsp;</h2></td>
+                            <th>Lastname:</th>
                             {% if user_profile.name == '' or request.user.userprofile.supervisor %}
-                            <td><input class="input" style="width: 10rem" typeof="text" v-model="last_name"
+                            <td><input class="input" typeof="text" v-model="last_name"
                                    v-bind:style="{border: styleColorLastName}" placeholder="Last Name"></td>
                             {% else %}
                             <td>{{ user_profile.last_name }}</td>
                             {% endif %}
                         </tr>
                         <tr>
-                            <td><h2 class="subtitle is-5"><strong>Department:</strong>&nbsp;</h2></td>
+                            <th>Department:</th>
                             {% if user_profile.department == 'Unspecify' or request.user.userprofile.supervisor %}
                             <td><div v-show="show_department || '{{request.user.userprofile.supervisor}}' === 'True'" style="display: inline">
                                     <div class="select">
-                                        <select style="width: 10rem; height: 3rem" v-model="department" v-bind:style="{border: styleColorDepartment}">
+                                        <select class="custom-select" v-model="department" v-bind:style="{border: styleColorDepartment}">
                                             {% for department, index in user_profile.department_choices %}
                                                 <option>{{ index }}</option>
                                             {% endfor %}
@@ -89,33 +89,34 @@ Profile |
                             {% endif %}
                         </tr>
                     <tr>
-                        <td><h2 class="subtitle is-5"><strong>Age:</strong>&nbsp;</h2></td>
-                        <td><input class="input" style="width: 10rem" typeof="text" v-model="age"></td>
+                        <th>Age:</th>
+                        <td><input class="input" typeof="text" v-model="age"></td>
                     </tr>
                     <tr>
-                        <td><h2 class="subtitle is-5"><strong>Email:</strong>&nbsp;</h2></td>
-                        <td><input class="input" style="width: 10rem" typeof="text" v-model="email"
+                        <th>Email:</th>
+                        <td><input class="input" typeof="text" v-model="email"
                                v-bind:style="{border: styleColorEmail}" placeholder="Email">
                         <label v-show="wrongEmail" style="color: red">Wrong Email or already exist in database!</label></td>
                     </tr>
                         {% if user_profile.user == request.user %}
                     <tr>
-                        <td>
-                            <h2 class="subtitle is-5"><strong>Last tip:</strong></h2>
-                        </td>
-                        <td><h2>{{user_profile.money}}&#8364;</h2></td>
+                        <th>
+                            Last tip:
+                        </th>
+                        <td><h3>{{user_profile.money}}&#8364;</h3></td>
                     </tr>
                      {% endif %}
                     </tbody>
                     </table>
-                    <button class="button is-dark"><strong>Save</strong></button>
+                        </div>
+                    <button class="btn text-light bg-dark"><strong>Save</strong></button>
                 </form>
             </div>
             {% if user_profile.user == request.user %}
             <!-- Changing password form -->
             <div class="form-wrapper" id="password_wrapper">
                 <div>
-                <button class="button is-dark" @click="seen = !seen"><strong>Change Password</strong></button>
+                <button class="btn text-light bg-dark" @click="seen = !seen"><strong>Change Password</strong></button>
                 </div>
                 <!-- Message of changing password, successful or unsuccessful -->
                 {% if messages %}
@@ -129,7 +130,7 @@ Profile |
                     <form method="post" action=".">
                         {% csrf_token %}
                         {{ change_password.as_p }}
-                        <button class="button is-dark" type="submit"><strong>Set new password</strong></button>
+                        <button class="btn text-light bg-dark" type="submit"><strong>Set new password</strong></button>
                     </form>
                 </div>
             </div>
@@ -137,122 +138,92 @@ Profile |
              {% if request.user.userprofile.supervisor %}
                 <div id="users-times">
                     <div>
-                    <button style="float: right" class="button is-dark" @click="seen = !seen"><strong>Times</strong></button>
+                    <button style="float: right" class="btn text-light bg-dark" @click="seen = !seen"><strong>Times</strong></button>
                     </div>
                     <span style="display: inline-block; height: 3rem"></span>
                     <div v-show="seen">
-                    <div v-for="(time, index) in times" v-if="time.owner === '{{user_profile.user.username}}'" style="text-align: center; border: solid black 1px">
-                        <div class="table-row">
-                            <div class="table-column" style="width: 18rem; text-align: left">
-                                <strong>Start:</strong> <input class="input is-small" v-model="times[index].start_working"  type="datetime-local" style="text-align: center; width: auto;" >
+                        <div class="table-responsive" style="min-height: 20rem">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Time</th>
+                                <th>Note</th>
+                                <th>Save</th>
+                                <th>Logs</th>
+                                <th>Delete</th>
+                            </thead>
+                            <tbody v-for="(time, index) in times" v-if="time.owner === '{{user_profile.user.username}}'" style="text-align: center; border-top: solid black 2px; border-bottom: solid black 2px">
+                                <tr>
+                                    <td>
+                                        <input class="input is-small" v-model="times[index].start_working"  type="datetime-local" style="text-align: center; width: auto;" >
+                                    </td>
+                                    <td>
+                                        <span v-if="!time.done_working">
+                                            Currently at work
+                                        </span>
+                                        <span v-else>
+                                            <input class="input is-small" v-model="times[index].end_working"  type="datetime-local" style="text-align: center; width: auto;" >
+                                        </span>
+                                    </td>
+                                    <td>[[time.worked_time]]</td>
+                                    <td><input class="input is-small" maxlength="100" type="text"
+                                       placeholder="Max: 100 characters" v-model="noteTime[index]"></td>
+                                    <td><button @click="sendCorrected(time.id, index)" class="btn bg-success"><ion-icon name="checkmark-outline"></ion-icon></button></td>
+                                    <td class="dropdown dropdown dropleft" style="margin-top: 0.2rem; margin-bottom: 0.2rem;">
+                                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownLogsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="true">
+                                                              <ion-icon name="reader-outline"></ion-icon>
+                                                            </button>
+
+                                                            <div class="dropdown-menu" aria-labelledby="dropdownLogsButton">
+                                                              <a v-for="change in changed_times_logs" v-if="change.workingtime === time.id" class="dropdown-item">
+                                                                  <div style="text-align: center">
+                                                                      <strong>Changed by:</strong>
+                                                                      <br>[[change.changed_by]]
+                                                                      <br><strong>Changed at:</strong>
+                                                                      <br>[[change.changed_at]]
+                                                                      <br><strong>Start:</strong>
+                                                                      <br>[[change.time_start]]
+                                                                      <br><strong>End:</strong>
+                                                                      <br>[[change.time_end]]
+                                                                      <br><strong>Note:</strong>
+                                                                      <br>[[change.notes]]
+                                                                  </div>
+                                                                  <hr class="dropdown-divider">
+                                                              </a>
+                                                            </div>
+                                                          </td>
+                                    <td><span v-if="time.checked_by_supervisor">
+                                                            <span v-if="time.is_approved_by_supervisor">
+                                                                <button @click="delTime(time.id)" class="btn bg-success" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                                    <ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                            </span>
+                                                            <span v-else>
+                                                                <button @click="delTime(time.id)" class="btn bg-danger" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                            </span>
+                                                        </span>
+                                                        <span v-else>
+                                                            <button @click="delTime(time.id)" class="btn bg-warning" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="trash-outline"></ion-icon><span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                              </span></button>
+                                                        </span></td>
+                                </tr>
+                                <tr v-if="time.corrected" style="color: red">
+                                    <td>[[time.start_working_corrected]]</td>
+                                                    <td>[[time.end_working_corrected]]</td>
+                                                    <td>[[time.worked_time_corrected]]</td>
+                                                    <td>Original Time</td>
+                                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
                             </div>
-                            <div class="table-column" v-if="!time.done_working" style="width: 18rem; text-align: left">
-                                <strong>Currently at work</strong>
-                            </div>
-                            <div class="table-column" v-else style="width: 18rem; text-align: left">
-                                <strong>End: </strong><input class="input is-small" v-model="times[index].end_working"  type="datetime-local" style="text-align: center; width: auto;" >
-                            </div>
-                            <div class="table-column" style="width: 8rem; text-align: left">
-                                <strong>Time: </strong>[[time.worked_time]]
-                            </div>
-                            <div class="table-column" style="width: 10rem">
-                                <strong>Note:</strong>
-                                <input class="input is-small" maxlength="100" type="text"
-                                       placeholder="Max: 100 characters" v-model="noteTime[index]">
-                            </div>
-                            <div class="table-column_bulma">
-                                <div class="dropdown is-hoverable">
-                                    <div class="dropdown-trigger">
-                                        <div v-if="time.checked_by_supervisor">
-                                            <div v-if="time.is_approved_by_supervisor" style="width: 8rem">
-                                                <button class="button is-success is-small" aria-haspopup="true" aria-controls="dropdown-menu">
-                                                    <ion-icon name="checkmark-outline"></ion-icon>
-                                                    <span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span>
-                                                </button>
-                                                </div>
-                                                <div v-else style="width: 8rem">
-                                                    <button class="button is-danger is-small" aria-haspopup="true" aria-controls="dropdown-menu">
-                                                        <ion-icon name="close-outline"></ion-icon>
-                                                        <span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div v-else style="width: 8rem">
-                                                <button class="button is-warning is-small" aria-haspopup="true" aria-controls="dropdown-menu"><ion-icon name="ellipsis-horizontal-outline"></ion-icon><span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span></button>
-                                            </div>
-                                              </div>
-                                              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                                <div class="dropdown-content">
-                                                    <div class="dropdown-item">
-                                                      <a @click="sendCorrected(time.id, index)" style="color: hsl(0, 0%, 21%)">
-                                                      <strong>SAVE CHANGES <ion-icon name="pencil-outline"></ion-icon></strong>
-                                                    </a>
-                                                  </div>
-                                                  <div id="frontpage-link" class="dropdown-item">
-                                                      <a @click="delTime(time.id)" style="color: hsl(0, 0%, 21%)">
-                                                      <strong>DELETE <ion-icon name="trash-outline"></ion-icon></strong>
-                                                  </a>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                <div class="dropdown is-hoverable is-right">
-                                              <div class="dropdown-trigger">
-                                                <button class="button is-small is-dark" aria-haspopup="true" aria-controls="dropdown-menu">
-                                                  <span><strong>LOGS</strong></span>
-                                                  <span class="icon is-small">
-                                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                                  </span>
-                                                </button>
-                                              </div>
-                                              <div class="dropdown-menu" id="dropdown-menu-logs" role="menu">
-                                                <div class="dropdown-content">
-                                                  <div v-for="change in changed_times_logs" v-if="change.workingtime === time.id" class="dropdown-item">
-                                                      <div>
-                                                          <strong>Changed by:</strong>
-                                                          <br>[[change.changed_by]]
-                                                          <br><strong>Changed at:</strong>
-                                                          <br>[[change.changed_at]]
-                                                          <br><strong>Start:</strong>
-                                                          <br>[[change.time_start]]
-                                                          <br><strong>End:</strong>
-                                                          <br>[[change.time_end]]
-                                                          <br><strong>Note:</strong>
-                                                          <br>[[change.notes]]
-                                                      </div>
-                                                      <hr class="dropdown-divider">
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="table-row" v-if="time.corrected" style="color: red; border-top: dashed black 1px">
-                                        <div class="table-column" style="width: 18rem; text-align: left">
-                                            <strong>Start: </strong>[[time.start_working_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 18rem; text-align: left">
-                                            <strong>End:</strong> [[time.end_working_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 8rem; text-align: left">
-                                            <strong>Time: </strong> [[time.worked_time_corrected]]
-                                        </div>
-                                        <div class="table-column" style="width: 8rem; text-align: right">
-                                            Original Time
-                                        </div>
-                                        <div class="table-column" style="width: 10rem">
-                                        </div>
-                                        <div class="table-column_bulma" style="width: 5rem"></div>
-                                    </div>
-                                </div>
                                     <div style="text-align: right; margin-top: 1rem">
-                                        <a class="button is-dark" href="{% url 'u_logs' user_profile.pk %}"
+                                        <a class="btn text-light bg-dark" href="{% url 'u_logs' user_profile.pk %}"
                                              download="{{user_profile.name}}{{user_profile.last_name}}logs"><strong>Download Logs</strong></a>
                                     </div>
                         </div>
@@ -260,7 +231,7 @@ Profile |
             {% endif %}
         </div>
     </div>
-</div>
+
 
 
 
@@ -277,7 +248,6 @@ Profile |
        data () {
            return {
                times: [],
-               times_corrected: [],
                seen: false,
                noteTime: [],
                changed_times_logs: []
@@ -296,7 +266,6 @@ Profile |
                         this.noteTime.push('');
                     }
                     this.changes_logs(response.data)
-                    this.times_corrected = response.data
                 })
             },
             changes_logs: function (times) {
@@ -321,14 +290,10 @@ Profile |
                 .then(response => this.getTimes())
             },
             sendCorrected: function (id, index) {
-                console.log(id);
                 var time = this.times[index];
-                var time_corrected = this.times_corrected[index];
                 axios.put('/api/workingtime/'+id+'/', {
                     'start_working': time.start_working,
-                    'start_working_corrected': time_corrected.start_working,
                     'end_working': time.end_working,
-                    'end_working_corrected': time_corrected.end_working,
                     'checked_by_supervisor': true,
                     'is_approved_by_supervisor': false,
                     'index': index,
@@ -435,7 +400,7 @@ Profile |
                             .then((response) => response.json())
                             .then((data) => {
                                 this.wrongEmail = data['email'];
-                                console.log('im back')
+                                location.reload()
                             })
                     }
                 }

@@ -1,0 +1,76 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+<div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+    <div class="col-12">
+        <h2>KW {{kw}}</h2>
+        <div class="table-responsive">
+    <table class="table">
+                <thead class="thead-dark">
+                    <th>Employee</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
+                </thead>
+         <tbody>
+                {% for employee in sorted %}
+                    <tr>
+                        <td>
+                           {{employee.0}}
+                        </td>
+                        <td>{% if not employee.1 == 'Mon' %}
+                            {{employee.1}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td>{% if not employee.2 == 'Tue' %}
+                            {{employee.2}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not employee.3 == 'Wed' %}
+                            {{employee.3}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td>{% if not employee.4 == 'Thu' %}
+                            {{employee.4}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td >{% if not employee.5 == 'Fri' %}
+                            {{employee.5}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td>{% if not employee.6 == 'Sat' %}
+                            {{employee.6}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                        <td>{% if not employee.7 == 'Sun' %}
+                            {{employee.7}}
+                            {% else %}
+                            Off-Day
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

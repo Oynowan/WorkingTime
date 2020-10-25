@@ -1,0 +1,23 @@
+dl, dd, dt{
+    margin:0;
+}
+.table_specification{
+    display: table;
+    width:100%;
+    border-spacing:5px 5px;
+}
+.table_specification dl{
+      display:table-row;
+}
+.table_specification dt, .table_specification dd{
+    display: table-cell;
+    width:50%;
+    border:1px solid red;
+}
+@media only screen and (max-width:480px){
+   .table_specification dd, .table_specification dt{
+    display: block;
+    width:100%;
+    border:1px solid red;
+}
+}

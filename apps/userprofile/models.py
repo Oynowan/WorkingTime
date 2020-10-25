@@ -21,6 +21,7 @@ class UserProfile(models.Model):
     # Departments
     department_choices = (
         ('Unspecify', 'Unspecify'),
+        ('F/B Management', 'F/B Management'),
         ('Restaurant - BFST', 'Restaurant - BFST'),
         ('Restaurant - Evening', 'Restaurant - Evening'),
         ('RoomService - Morning', 'RoomService - Morning'),

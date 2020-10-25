@@ -1,33 +1,33 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="columns">
-        <div class="column is-12">
-            <h1 class="title">
+
+    <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="col-12">
+            <h1>
                 New accounts
             </h1>
-            <h2 class="subtitle is-4">
+            <h4>
                 Approve ONLY accounts with correct data(informations)<br>and which are real employees of hotel.
-            </h2>
+            </h4>
             <div id="confirm_form">
                 {% if to_confirm %}
                 {% for employee in to_confirm %}
-                <div class="table-row">
-                    <div class="table-column" style="width: 8rem">
+                <div class="row">
+                    <div class="col" >
                             {{employee.name}}
                     </div>
-                    <div class="table-column" style="width: 8rem">
+                    <div class="col" >
                             {{employee.last_name}}
                     </div>
-                    <div class="table-column" style="padding-left: 1rem; width: 8rem">
+                    <div class="col">
                         <a href="{% url 'user_profile_ui' employee.user %}">Profile</a>
                     </div>
-                    <div class="table-column_bulma">
-                        <button class="button is-success" @click="sendConfirmation('{{employee.pk}}')" style="float:left; margin-right: 0.5rem">
+                    <div class="col">
+                        <button class="btn bg-success" @click="sendConfirmation('{{employee.pk}}')" style="float:left; margin-right: 0.5rem">
                             <ion-icon name="checkmark-outline"></ion-icon>
                         </button>
-                        <button class="button is-danger" @click="sendNotConfirmation('{{employee.pk}}')">
+                        <button class="btn bg-danger" @click="sendNotConfirmation('{{employee.pk}}')">
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
                     </div>
@@ -35,14 +35,13 @@
                 </div>
                 {% endfor %}
                 {% else %}
-                <h2 class="subtitle is-4">
+                <h4>
                     No new accounts to approve.
-                </h2>
+                </h4>
                 {% endif %}
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}
 
@@ -75,6 +74,7 @@
                     })
                         .then(response => {
                             console.log('it worked')
+                            location.reload()
                         })
                 },
                 sendNotConfirmation: function (user) {
@@ -95,6 +95,7 @@
                     })
                         .then(response => {
                             console.log('it worked')
+                            location.reload()
                         })
                 },
             })

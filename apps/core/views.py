@@ -22,7 +22,6 @@ def frontpage(request):
             hour += 1
             total_time -= 60
         total_time_ = f'{hour}h {total_time}min'
-        print(total_time_)
     else:
         work_dates = ['AnonymousUser']
         total_time_ = '00:00'
@@ -65,3 +64,7 @@ class SearchResultView(ListView):
             object_list.append(UserProfile.objects.filter(Q(name__icontains=query) | Q(last_name__icontains=query)))
         is_valid_ = object_list[0].exists()
         return {'object_list': object_list, 'query': query, 'is_valid': is_valid_}
+
+
+def tests(request):
+    return render(request, 'core/index.html')

@@ -1,0 +1,62 @@
+{% extends 'core/index.html' %}
+{% block content %}
+
+    <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="col-12" style="text-align: center">
+            <h2>Daily Employees Working Time</h2>
+            <div id="daily">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <th>Employee</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Time</th>
+                        </thead>
+                        <tbody class="tbody-light">
+                            <tr v-for="time in times">
+                                <td>[[time.name]] [[time.last_name]]</td>
+                                <td>[[time.start_working]]</td>
+                                <td v-if="!time.done_working">Currently at work</td>
+                                <td v-else>[[time.end_working]]</td>
+                                <td>[[time.worked_time]]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    new Vue({
+        el: '#daily',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                times: []
+            }
+        },
+        mounted () {
+            this.getTimes()
+        },
+        methods: {
+            getTimes: function() {
+                axios.get('/api/workingtime/')
+                .then(response => {
+                    var today = new Date();
+                    for (i=0;i<response.data.length;i++) {
+                        var time = new Date(response.data[i].start_working)
+                        if ( time.getDate() === today.getDate()) {
+                            this.times.push(response.data[i])
+                        }
+                    }
+                })
+            }
+        }
+    })
+</script>
+{% endblock %}

@@ -1,22 +1,20 @@
-{% extends 'core/base.html' %}
+{% extends 'core/index.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="columns">
-        <div class="column is-12">
-            <h1 class="title">Searching for {{object_list.query}}</h1><br>
+    <div class="row" style="margin: 5rem 0rem;">
+        <div class="col-12">
+            <h1>Searching for {{object_list.query}}</h1><br>
             {% if object_list.is_valid %}
             {% for object in object_list.object_list %}
                 {% for user in object %}
                 {% if not user.user.is_staff %}
-                    <h2 class="subtitle is-5"><a class="button is-dark" href="{% url 'user_profile_ui' user.user.username %}">{{user.name}} {{user.last_name}}</a></h2>
+                    <h5><a class="btn bg-dark text-light" href="{% url 'user_profile_ui' user.user.username %}">{{user.name}} {{user.last_name}}</a></h5>
                 {% endif %}
                 {% endfor %}
             {% endfor %}
             {% else %}
-            <h2 class="subtitle is-3">Didnt found employee</h2>
+            <h3>Didnt found employee</h3>
             {% endif %}
         </div>
     </div>
-</div>
 {% endblock %}

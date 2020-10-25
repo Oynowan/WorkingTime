@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test</title>
+    <!-- Bootstrap Dropdown Hover CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="{% static 'normalize.css' %}" />
+    <link type="text/css" rel="stylesheet" href="{% static 'style_index.css' %}" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+</head>
+<body>
+
+    <div class="jumbotron" style="margin-bottom: 0;">
+
+    </div>
+    <nav  id="nav-burger" class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+        <a class="navbar-brand" href="{% url 'frontpage' %}"><img src="{% static 'img/SO-logo.jpg' %}"/></a>
+        <button class="navbar-toggler" data-toggle="collapse" data-target="#collapse_target" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapse_target">
+            {% if request.user.is_authenticated %}
+        <ul class="navbar-nav">
+            {% if request.user.userprofile.at_work %}
+            <li class="nav-item" style="margin-right: 1rem">
+                <span class="navbar-text text-light">Currently at work</span>
+            </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+                 <hr class="dropdown-divider">
+                <div class="nav-link dropdown-toggle" data-toggle="dropdown" data-target="dropdown_target">
+                    Menu
+                    <span class="caret"></span>
+                </div>
+                <div class="dropdown-menu" aria-labelledby="dropdown_target">
+                    <a class="dropdown-item" href="{% url 'working' %}">
+                        Work
+                    </a>
+                    {% if request.user.userprofile.supervisor %}
+                    <a class="dropdown-item" href="{% url 'views_employees' %}">
+                        TIPS
+                    </a>
+                    <a class="dropdown-item" href="{% url 'daily' %}">
+                        DAILY
+                    </a>
+                    <a class="dropdown-item">
+                        <form method="get" action="{% url 'kw' %}">
+                            <label>KW: </label>
+                            <input class="input is-small" name="q"  type="number"
+                                   placeholder="KW" style="width: 4rem" max="53" min="1">
+                        </form>
+                    </a>
+                    <a class="dropdown-item" href="{% url 'to_confirm' %}">
+                        Accounts([[to_confirm_acc]])
+                    </a>
+                    <a class="dropdown-item" href="{% url 'to_confirm_time' %}">
+                        Time([[to_confirm_time]])
+                    </a>
+                    {%endif%}
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'user_profile_ui' request.user.username %}">
+                        Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">
+                        Logout
+                    </a>
+                </div>
+            </li>
+        </ul>
+            <form method="get" action="{% url 'list_of_users' %}" class="form-inline my-2 my-md-0 ml-auto">
+                <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search employee" aria-label="Search">
+            </form>
+            {% else %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="btn text-dark bg-light" href="{% url 'login' %}">
+                        Login
+                    </a>
+                    </li>
+            </ul>
+             {% endif %}
+            </div>
+    </nav>
+    <!-- Content -->
+<section class="section">
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</section>
+<!-- End Content -->
+
+<!-- Footer -->
+<footer class="page-footer font-small stylish-color-dark pt-4 ">
+
+  <hr>
+
+  <!-- Call to action -->
+    {% if not request.user.is_authenticated %}
+  <ul class="list-unstyled list-inline text-center py-2">
+    <li class="list-inline-item">
+      <h5 class="mb-1">Register for free</h5>
+    </li>
+    <li class="list-inline-item">
+      <a href="{% url 'signup' %}" class="btn btn-danger btn-rounded">Sign up!</a>
+    </li>
+  </ul>
+    {% endif %}
+  <!-- Call to action -->
+
+  <hr>
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2020 Copyright:
+    <a href="https://www.linkedin.com/in/kamil-staniszewski-433528174/"> Kamil Staniszewski</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+<!-- SCRIPTS -->
+    <script>
+
+    new Vue ({
+        el: '#nav-burger',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                isOpen: false,
+                to_confirm_acc: 0,
+                to_confirm_time: 0,
+                search: ''
+            }
+        },
+        mounted () {
+            this.toConfirmAcc();
+            this.toConfirmTime()
+        },
+        methods: {
+            toConfirmAcc: function () {
+                axios.get('/api/userprofile/')
+                .then(response => {
+                let accounts = 0;
+                let data = response.data;
+                let i;
+                for (i = 0; i < data.length; i++) {
+                    if ( data[i].checked_account === false && data[i].fully_registered === true) {
+                        accounts++;
+                    }
+                }
+                this.to_confirm_acc = accounts
+            })
+            },
+            toConfirmTime: function () {
+                axios.get('/api/workingtime/')
+                .then(response => {
+                let times = 0;
+                let data = response.data;
+                let i;
+                for (i = 0; i < data.length; i++) {
+                    if ( data[i].checked_by_supervisor === false && data[i].done_working === true) {
+                        times++;
+                    }
+                }
+                this.to_confirm_time = times
+            })
+            }
+        }
+
+    })
+</script>
+{% block script %}
+{% endblock script %}
+<!-- End Scripts -->
+<!-- SCRIPTS -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule="" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
