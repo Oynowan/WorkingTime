@@ -15,6 +15,8 @@ def api_save_profile_changes(request):
         user_u = User.objects.get(username=body['user'])
         user = UserProfile.objects.get(user=user_u)
         user.confirmed_employee = body['confirmed']
+        if body['confirmed']:
+            user.checked_account = True
     else:
         user = UserProfile.objects.get(user=request.user)
     if body['name'] == '' or body['last_name'] == '' or body['department'] == 'Unspecify':
@@ -23,6 +25,9 @@ def api_save_profile_changes(request):
         user.fully_registered = True
     if request.user.userprofile.manager:
         user.supervisor = body['confirmed_supervisor']
+        if body['confirmed_supervisor']:
+            user.confirmed_employee = True
+            user.checked_account = True
     user.name = body['name']
     user.last_name = body['last_name']
     user.department = mark_safe(body['department'])

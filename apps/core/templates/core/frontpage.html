@@ -8,6 +8,13 @@
     <div class="col-12">
 
                 {% if request.user.is_authenticated %}
+                    {% if not request.user.userprofile.checked_account %}
+                        <h3>
+                            Waiting for supervisor to approve your account.
+                        </h3>
+                    {% elif request.user.userprofile.checked_account and not request.user.userprofile.confirmed_employee %}
+                        <h3>Your account wasn't confirmed by Management. Please contact your Manager</h3>
+                    {% else %}
                         <h2>Welcome back {{ request.user.userprofile.name}} {{request.user.userprofile.last_name}}</h2><br>
                         <h4>You can delete working times by pressing <ion-icon name="trash-outline"></ion-icon>.
                             <br>You can check logs of changes under <ion-icon name="reader-outline"></ion-icon>.
@@ -92,7 +99,7 @@
                                 </div>
                             </div>
     </div>
-
+                        {% endif %}
                 {% else %}
                     <h1>Hi there!</h1>
                     <ul>
