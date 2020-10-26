@@ -21,7 +21,7 @@ def frontpage(request):
         for work in work_dates:
             total_time += work.worked_time_seconds
         hour = 0
-        while total_time > 60:
+        while total_time >= 60:
             hour += 1
             total_time -= 60
         total_time_ = f'{hour}h {total_time}min'
