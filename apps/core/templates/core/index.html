@@ -54,10 +54,10 @@
                     </a>
                     {% if request.user.userprofile.supervisor %}
                     <a class="dropdown-item" href="{% url 'views_employees' %}">
-                        TIPS
+                        Tips
                     </a>
                     <a class="dropdown-item" href="{% url 'daily' %}">
-                        DAILY
+                        Daily
                     </a>
                     <a class="dropdown-item">
                         <form method="get" action="{% url 'kw' %}">
