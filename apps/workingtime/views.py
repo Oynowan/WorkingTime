@@ -6,14 +6,14 @@ from .models import WorkingTime
 from django.contrib.auth.models import User
 from ..userprofile.models import UserProfile
 from ..core.static.scripts import time_count
+from ..core.static.decorators import full_registered
 
 # Create your views here.
 
 
-@login_required()
+@login_required
+@full_registered
 def working(request):
-    if not request.user.userprofile.fully_registered or not request.user.userprofile.confirmed_employee:
-        return redirect('user_profile_ui', request.user.username)
     started = 0
     p = User.objects.get(pk=request.user.id)
     time = p.userprofile.workingtime.first()

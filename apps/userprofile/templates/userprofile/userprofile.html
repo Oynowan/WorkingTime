@@ -94,9 +94,7 @@ Profile |
                     </tr>
                     <tr>
                         <th>Email:</th>
-                        <td><input class="input" typeof="text" v-model="email"
-                               v-bind:style="{border: styleColorEmail}" placeholder="Email">
-                        <label v-show="wrongEmail" style="color: red">Wrong Email or already exist in database!</label></td>
+                        <td>{{user_profile.user.email}}</td>
                     </tr>
                         {% if user_profile.user == request.user %}
                     <tr>

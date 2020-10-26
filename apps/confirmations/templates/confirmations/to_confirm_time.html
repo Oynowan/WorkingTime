@@ -1,15 +1,35 @@
 {% extends 'core/index.html' %}
-
 {% block content %}
+{% load static %}
+<style>
+    #custom_card {
+			width: 20rem;
+			margin-top: auto;
+			margin-bottom: .5rem;
+            margin-right: .5rem;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			padding: 10px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
 
+		}
+</style>
     <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="col-12">
-            <h1>TIME</h1>
+            <h1 style="padding-left: 1.25rem">Check new times</h1>
             <span class="span-row" style="width: 100%"></span>
             <div id="confirm_time">
                 <div v-if="times.length">
-                <table class="table bg-light">
-                    <tbody v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true">
+                    <div class="row" style="padding-left: 1.25rem" >
+                        <div class="col" v-for="(time, index) in times" v-if="time.checked_by_supervisor===false && time.done_working == true" >
+                            <div id="custom_card" >
+                                <div class="table-responsive">
+                                    <table class="table bg-light" >
+                    <tbody>
                     <tr>
                             <th>Employee:</th>
                             <td>[[time.name]]&nbsp;[[time.last_name]]</td>
@@ -55,6 +75,10 @@
                     </tr>
                     </tbody>
                 </table>
+                            </div>
+                        </div>
+                </div>
+                        </div>
                     </div>
                 <div v-else>
                     <h4>
@@ -62,7 +86,6 @@
                     </h4>
                 </div>
             </div>
-        </div>
     </div>
 {% endblock %}
 

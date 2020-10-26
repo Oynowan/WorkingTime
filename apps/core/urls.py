@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.frontpage, name='frontpage'),
     path('signup/', views.signup, name='signup'),
     path('logout/', views_.LogoutView.as_view(), name='logout'),
-    path('login/', views_.LoginView.as_view(template_name='core/login.html'), name='login'),
+    path('login/', views.loginPage, name='login'),
     path('users_list/', views.SearchResultView.as_view(template_name='core/list_of_users.html'), name='list_of_users'),
 
     # API

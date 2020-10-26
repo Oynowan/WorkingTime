@@ -10,18 +10,18 @@
             <h4>
                 Approve ONLY accounts with correct data(informations)<br>and which are real employees of hotel.
             </h4>
-            <div id="confirm_form">
+            <div id="confirm_form" style="border-top: solid black 1px;">
                 {% if to_confirm %}
                 {% for employee in to_confirm %}
-                <div class="row">
+                <div class="row" style="border-bottom: solid black 1px; margin-top: 5rem">
                     <div class="col" >
-                            {{employee.name}}
+                        <h4>{{employee.name}}</h4>
                     </div>
                     <div class="col" >
-                            {{employee.last_name}}
+                        <h4>{{employee.last_name}}</h4>
                     </div>
                     <div class="col">
-                        <a href="{% url 'user_profile_ui' employee.user %}">Profile</a>
+                        <a href="{% url 'user_profile_ui' employee.user %}"><h4>Profile</h4></a>
                     </div>
                     <div class="col">
                         <button class="btn bg-success" @click="sendConfirmation('{{employee.pk}}')" style="float:left; margin-right: 0.5rem">

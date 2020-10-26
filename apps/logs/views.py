@@ -10,15 +10,13 @@ import os
 import pytz
 import json
 # Create your views here.
-from ..core.static.decorators import supervisor_member_required
+from ..core.static.decorators import supervisor_member_required, full_registered
 
 
 # WorkingTime Logs
-@supervisor_member_required()
+@full_registered
+@supervisor_member_required
 def wt_logs(request, pk):
-    if request.user.is_authenticated:
-        if not request.user.userprofile.fully_registered:
-            return redirect('user_profile_ui', request.user.username)
     format = '%Y-%m-%d %H:%M'
     working_time = get_object_or_404(WorkingTime, pk=pk)
     file_log = os.path.abspath(f'apps/logs/templates/logs/download/t_logs/wt_logs.txt')
@@ -35,11 +33,9 @@ def wt_logs(request, pk):
 
 
 # Users all time Logs
-@supervisor_member_required()
+@full_registered
+@supervisor_member_required
 def u_logs(request, pk):
-    if request.user.is_authenticated:
-        if not request.user.userprofile.fully_registered:
-            return redirect('user_profile_ui', request.user.username)
     format = '%Y-%m-%d %H:%M'
     userprofile = get_object_or_404(UserProfile, pk=pk)
     # path_logs = os.path.abspath(f'apps/logs/templates/logs/download/u_logs/')
@@ -61,12 +57,9 @@ def u_logs(request, pk):
     logs_file.close()
     return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/u_logs/u_logs.txt")}', {'pk': pk})
 
-
-@supervisor_member_required()
+@full_registered
+@supervisor_member_required
 def daily_logs(request):
-    if request.user.is_authenticated:
-        if not request.user.userprofile.fully_registered:
-            return redirect('user_profile_ui', request.user.username)
     times = WorkingTime.objects.all()
     daily_times = []
     for time in times:
@@ -77,9 +70,6 @@ def daily_logs(request):
 
 @supervisor_member_required()
 def weekly_logs(request):
-    if request.user.is_authenticated:
-        if not request.user.userprofile.fully_registered:
-            return redirect('user_profile_ui', request.user.username)
     time_format = "%H:%M"
     kw = request.GET.get('q')
     times = WorkingTime.objects.all()
@@ -92,7 +82,7 @@ def weekly_logs(request):
             if time.users_time.department == request.user.userprofile.department or request.user.userprofile.manager:
                 times_.append(time)
     for time in times_:
-        if time.users_time not in employees:
+        if time.users_time not in employees and not time.users_time.user.is_staff:
             employees.append(time.users_time)
     for employee in employees:
         week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -111,10 +101,12 @@ def weekly_logs(request):
                     i += 1
         sorted_times.append(week_days)
     for user in users:
-        week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        if user not in employees:
-            week_days[0] = f'{user.name} {user.last_name}'
-            sorted_times.append(week_days)
+        if not user.user.is_staff:
+            week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            if user not in employees:
+                if user.department == request.user.userprofile.department or request.user.userprofile.manager:
+                    week_days[0] = f'{user.name} {user.last_name}'
+                    sorted_times.append(week_days)
 
     return render(request, 'logs/calendar_week.html', {'kw': kw, 'sorted': sorted_times})
 

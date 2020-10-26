@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from ..userprofile.models import User, UserProfile
 from django.contrib.admin.views.decorators import staff_member_required
-from apps.core.static.decorators import supervisor_member_required
+from ..core.static.decorators import supervisor_member_required, full_registered
 from ..core.static.scripts import check_registered
 # Create your views here.
 
-
+@full_registered
 @supervisor_member_required()
 def views_employees(request):
     if not request.user.userprofile.fully_registered:
@@ -18,7 +18,7 @@ def views_employees(request):
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
 
-
+@full_registered
 @supervisor_member_required()
 def tips_shared(request):
     if not request.user.userprofile.fully_registered:

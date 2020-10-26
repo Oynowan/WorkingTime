@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib import messages
 from ..workingtime.models import WorkingTime
 from .static.scripts import time_count
 from .static.scripts import check_registered
 from ..userprofile.models import UserProfile
+from .forms import CreateUserForm
 from django.db.models import Q
 from django.views.generic import ListView
+from .static.decorators import unauthenticated_user
 
 
 def frontpage(request):
@@ -31,17 +34,38 @@ def frontpage(request):
     }
     return render(request, 'core/frontpage.html', context)
 
+def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('frontpage')
 
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('frontpage')
+        else:
+            messages.info(request, 'Wrong Username or Password')
+    context = {}
+    return render(request, 'core/login.html', context)
+
+
+@unauthenticated_user
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CreateUserForm(request.POST)
 
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('user_profile_ui', user.username)
+        else:
+            print(form.errors)
     else:
-        form = UserCreationForm()
+        form = CreateUserForm()
 
     return render(request, 'core/signup.html', {'form': form})
 
@@ -66,5 +90,3 @@ class SearchResultView(ListView):
         return {'object_list': object_list, 'query': query, 'is_valid': is_valid_}
 
 
-def tests(request):
-    return render(request, 'core/index.html')
