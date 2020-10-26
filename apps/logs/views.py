@@ -4,6 +4,7 @@ from ..userprofile.models import UserProfile
 from ..workingtime.models import WorkingTime
 from ..logs.models import WorkingChangeLogs
 from datetime import datetime, timedelta
+import time as time_time
 from django.db.models import Q
 from django.views.generic import ListView
 import os
@@ -57,13 +58,14 @@ def u_logs(request, pk):
     logs_file.close()
     return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/u_logs/u_logs.txt")}', {'pk': pk})
 
+
 @full_registered
 @supervisor_member_required
 def daily_logs(request):
     times = WorkingTime.objects.all()
     daily_times = []
     for time in times:
-        if time.start_working.day == datetime.now().day:
+        if time.start_working.day == datetime.now().day and not time.users_time.user.is_staff:
             daily_times.append(time)
     return render(request, 'logs/daily.html', {'daily_times': daily_times})
 
@@ -71,18 +73,33 @@ def daily_logs(request):
 @supervisor_member_required()
 def weekly_logs(request):
     time_format = "%H:%M"
+    date_format = "%m-%d"
     kw = request.GET.get('q')
     times = WorkingTime.objects.all()
     users = UserProfile.objects.all()
     times_ = []
     employees = []
     sorted_times = []
+
+    # Dates of a days in the given calendar week
+    start_date = time_time.asctime(time_time.strptime('2020 %d 1' % (int(kw)-1), '%Y %W %w'))
+    startdate = datetime.strptime(start_date, '%a %b %d %H:%M:%S %Y')
+    dates = [datetime.strftime(startdate, date_format)]
+    for i in range(1, 7):
+        dates.append(datetime.strftime((startdate + timedelta(days=i)), date_format))
+    year = datetime.strftime(startdate, '%Y')
+    second_year = datetime.strftime((startdate+timedelta(days=6)), '%Y')
+    if year != second_year:
+        year = f'{year}/{second_year}'
+
+    # Founding times with dates which are in given calendar week
+    # Also the employees
     for time in times:
         if datetime.date(time.start_working).strftime('%V') == kw:
             if time.users_time.department == request.user.userprofile.department or request.user.userprofile.manager:
                 times_.append(time)
     for time in times_:
-        if time.users_time not in employees and not time.users_time.user.is_staff:
+        if time.users_time not in employees and not time.users_time.user.is_staff and time.users_time.confirmed_employee:
             employees.append(time.users_time)
     for employee in employees:
         week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -96,7 +113,7 @@ def weekly_logs(request):
                         time2_ = time.end_working.astimezone(pytz.timezone('Europe/Berlin'))
                         time1 = datetime.strftime(time1_, time_format)
                         time2 = datetime.strftime(time2_, time_format)
-                        week_days[i] = f'{time1} {time2}'
+                        week_days[i] = f'{time1}-{time2}'
                         break
                     i += 1
         sorted_times.append(week_days)
@@ -108,5 +125,6 @@ def weekly_logs(request):
                     week_days[0] = f'{user.name} {user.last_name}'
                     sorted_times.append(week_days)
 
-    return render(request, 'logs/calendar_week.html', {'kw': kw, 'sorted': sorted_times})
+    return render(request, 'logs/calendar_week.html',
+                  {'kw': kw, 'sorted': sorted_times, 'dates': dates, 'year': year})
 

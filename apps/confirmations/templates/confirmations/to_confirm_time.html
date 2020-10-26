@@ -108,7 +108,6 @@
         },
         methods: ({
             sendCorrected: function (id, index) {
-                console.log(id);
                 var time = this.times[index];
                 var time_corrected = this.times_corrected[index];
                 axios.put('/api/workingtime/'+id+'/', {
@@ -128,7 +127,6 @@
                     }
                 }).then(response => {
                     this.over = response.data['over'];
-                    console.log('Corrected!')
                     this.getTime();
                 }, 	(error) => { console.log(error) })
             },
@@ -148,7 +146,6 @@
                 })
                 .then(response => {
                     this.over = response.data['over']
-                    console.log('Confirmed!')
                     this.getTime()
                 }, 	(error) => { console.log(error) })
             },
@@ -159,7 +156,6 @@
                         for (i=0; i < response.data.length; i++) {
                             this.noteTime.push('')
                             if (!response.data[i].checked_by_supervisor && response.data[i].done_working) {
-                                console.log(response.data[i])
                                 this.times.push(response.data[i])
                                 this.times_corrected.push(response.data[i])
                             }

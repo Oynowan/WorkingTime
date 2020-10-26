@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect
 from .permissions import IsOwnerSupervisorOrReadOnlyUserProfile, IsOwnerSupervisorOrReadOnlyWorkingTime
 from .serializers import WorkingTimeSerializer, UserProfileSerializer, WorkingChangeLogsSerializer
 # Workingtime app
@@ -66,7 +66,6 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 workingtime.worked_time = 'Worked to much, default time added. 10h'
                 workingtime.worked_time_seconds = 600
             elif time[1] < 0:
-                print('cant work into the past')
                 return Response({'over': True, 'success': True})
             else:
                 if request.data['break']:

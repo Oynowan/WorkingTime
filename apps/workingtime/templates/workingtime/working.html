@@ -14,7 +14,7 @@
                                     Press the button to start counting your work time!
                                 </strong>
                             </h2>
-                            <button class="btn bg-success" @click="startWork()" style="float:right">START</button>
+                            <button class="btn text-light bg-success" style="float:right" data-toggle="modal" data-target="#workingModal">START</button>
                         </div>
                         <div v-else>
                             <h2>You have been working today!<br> </h2>
@@ -32,13 +32,40 @@
                                 <input v-model="break_" type="checkbox">
 
                             </div></h5>
-                            <button class="btn bg-danger" @click="stopWork()" style="float:right">STOP</button>
+                            <button class="btn text-light bg-danger" style="float:right" data-toggle="modal" data-target="#workingModal">STOP</button>
                         </div>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="workingModal" tabindex="-1" role="dialog" aria-labelledby="workingModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="workingModalLabel">Working</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div v-if="!user.at_work && !user.worked_today" class="modal-body">
+                            Are you ready to begin your shift?
+                          </div>
+                            <div v-if="user.at_work && !user.worked_today" class="modal-body">
+                            Are you sure you are done for today?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                              <div v-if="!user.at_work && !user.worked_today">
+                                <button type="button" @click="startWork()" class="btn btn-success">Yes</button>
+                              </div>
+                              <div v-if="user.at_work && !user.worked_today">
+                                <button type="button" @click="stopWork()" class="btn btn-danger">Yes</button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                 </div>
             </div>
         </div>
-
 {% endblock %}
 
 {% block script %}
@@ -50,7 +77,7 @@
             return {
                 user: '',
                 latest_time: '',
-                break_: false
+                break_: false,
             }
         },
         mounted () {
@@ -62,7 +89,9 @@
                 axios.get('/api/userprofile/'+pk+'/')
                 .then(response => {
                     this.user = response.data;
-                    vm.latest_time = this.getTime(response.data.workingtime[0])
+                    if (response.data.workingtime[0] !== undefined) {
+                        vm.latest_time = this.getTime(response.data.workingtime[0])
+                    }
                 })
             },
             startWork: function() {
@@ -83,8 +112,9 @@
                 })
                 .then(response => {
                     this.userAtWork('{{request.user.userprofile.id}}')
+                    location.reload()
                 })
-            },
+                },
             stopWork: function () {
                 this.getTime(this.user.workingtime[0])
                 axios.put('/api/workingtime/'+this.user.workingtime[0]+'/', {
@@ -98,6 +128,7 @@
                 })
                 .then(response => {
                     this.userNotAtWork(this.user.id);
+                    location.reload()
                     return response.data
                 })
             },

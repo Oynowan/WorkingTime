@@ -50,7 +50,7 @@
                     var today = new Date();
                     for (i=0;i<response.data.length;i++) {
                         var time = new Date(response.data[i].start_working)
-                        if ( time.getDate() === today.getDate()) {
+                        if ( time.getDate() === today.getDate() ) {
                             this.times.push(response.data[i])
                         }
                     }
