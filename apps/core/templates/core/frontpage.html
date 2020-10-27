@@ -15,10 +15,14 @@
                         <h3>Your account wasn't confirmed by Management. Please contact your Manager</h3>
                     {% else %}
                         <h2>Welcome back {{ request.user.userprofile.name}} {{request.user.userprofile.last_name}}</h2><br>
+                    <div id="get_time">
+                        <div id="time">
+                            <div v-if="times.length !== 0" class="table-responsive" style="min-height: 50rem">
                         <h4>You can delete working times by pressing <ion-icon name="trash-outline"></ion-icon>.
                             <br>You can check logs of changes under <ion-icon name="reader-outline"></ion-icon>.
                             <br>Deleted times cant be restored, so be careful.</h4>
                             <div style="margin-bottom: 5rem"></div>
+
                             <div style="background: hsl(48, 100%, 67%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
                                 Waiting for approve/still at work</div>
                             <div style="background: hsl(141, 53%, 53%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
@@ -26,10 +30,7 @@
                             <div style="background: hsl(348, 100%, 61%); width: 21rem; margin: 0.5rem 0; border-radius: 20px; text-align: center;">
                                 Corrected by Supervisor</div>
                             <span style="display: inline-block"></span>
-                            <div id="get_time">
-                                    <div id="time">
-                                        <div class="table-responsive" style="min-height: 50rem">
-                                            <div class="container mb-3 mt-3">
+                                <div class="container mb-3 mt-3">
                                             <table class="table table-striped table-bordered table-sm" style="width: 100%">
                                                 <thead class="thead-dark">
                                                 <tr>
@@ -97,6 +98,9 @@
                                             <div style="float: right">
                                         Total: {{total_time}}
                                         </div>
+                                        </div>
+                                        <div v-else>
+                                            <h2>No records of work in database for your account.</h2>
                                         </div>
                                         <!-- Modal -->
                                 </div>
