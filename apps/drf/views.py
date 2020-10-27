@@ -59,7 +59,6 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
             user.worked_today = True
             user.save()
             time = time_count(workingtime.start_working, timezone.now())
-
             if time[1] > 600:
                 end_work = workingtime.start_working + timedelta(hours=10)
                 workingtime.end_working = end_work
@@ -69,9 +68,10 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
                 return Response({'over': True, 'success': True})
             else:
                 if request.data['break']:
-                    end = timezone.now() + timedelta(minutes=30)
-                    time = time_count(workingtime.start_working, end)
-                    workingtime.end_working = end
+                    if time[1] > 360:
+                        end = timezone.now() + timedelta(minutes=30)
+                        time = time_count(workingtime.start_working, end)
+                        workingtime.end_working = end
                 else:
                     workingtime.end_working = timezone.now()
                 workingtime.worked_time = time[0]

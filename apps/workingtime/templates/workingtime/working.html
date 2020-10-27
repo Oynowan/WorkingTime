@@ -28,8 +28,10 @@
                                 You can't start working again in the same day!<br>
                                 Check box if you didnt have a break.</h4>
                             <h5><div style="display: inline-block; border-bottom: solid black 1px">
+                                <br>
                                 <label><strong>Break</strong></label>
                                 <input v-model="break_" type="checkbox">
+                                <h6>(Break is added only if you worked more than 6 hours)</h6>
 
                             </div></h5>
                             <button class="btn text-light bg-danger" style="float:right" data-toggle="modal" data-target="#workingModal">STOP</button>
