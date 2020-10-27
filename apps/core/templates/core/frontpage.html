@@ -16,8 +16,7 @@
                     {% else %}
                         <h2>Welcome back {{ request.user.userprofile.name}} {{request.user.userprofile.last_name}}</h2><br>
                     <div id="get_time">
-                        <div id="time">
-                            <div v-if="times.length !== 0" class="table-responsive" style="min-height: 50rem">
+                            <div v-if="times.length > 0" class="table-responsive" style="min-height: 50rem">
                         <h4>You can delete working times by pressing <ion-icon name="trash-outline"></ion-icon>.
                             <br>You can check logs of changes under <ion-icon name="reader-outline"></ion-icon>.
                             <br>Deleted times cant be restored, so be careful.</h4>
@@ -103,7 +102,7 @@
                                             <h2>No records of work in database for your account.</h2>
                                         </div>
                                         <!-- Modal -->
-                                </div>
+
                             </div>
     </div>
                         {% endif %}
@@ -119,7 +118,7 @@
                     <strong>Sign up</strong> now below and try it for yourself!</h3>
                 {% endif %}
 </div>
-</div>
+
 
 {% endblock %}
 
@@ -132,7 +131,7 @@
         delimiters: ['[[',']]'],
         data () {
             return {
-                times: '',
+                times: [],
                 same_:false,
                 changed_times_logs: [],
             }
@@ -144,7 +143,12 @@
             getTimes: function () {
                 axios.get('/api/workingtime/')
                 .then(response => {
-                    this.times = response.data
+                    this.times = []
+                    for (i=0;i<response.data.length;i++){
+                        if (response.data[i].owner === '{{ request.user.username}}') {
+                            this.times.push(response.data[i])
+                        }
+                    }
                     this.changes_logs(response.data)
                 })
             },
