@@ -3,7 +3,15 @@
 {% block content %}
 <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
     <div class="col-12" id="weekly">
-        <h2 style="display: inline-block">{{year}} - KW {{kw}}</h2>
+        <h2>{{year}} - KW {{kw}}</h2>
+        <form style="display: inline-block;" method="get" action="{% url 'kw' %}">
+                            <input hidden type="number" v-model="back" name="q">
+                            <button class="btn bg-dark text-light"><strong>Back</strong></button>
+                        </form>
+        <form style="display: inline-block" method="get" action="{% url 'kw' %}">
+                            <input hidden type="number" v-model="next" name="q">
+                            <button class="btn bg-light text-dark"><strong>Next</strong></button>
+                        </form>
         <div class="select" style="float: right">
                 <h5 style="display: inline-block">Department: </h5>
                 <select class="custom-select " v-model="department" style="width: auto; ">
@@ -87,7 +95,9 @@
             delimiters: ['[[', ']]'],
             data () {
                 return {
-                    department: '{{request.user.userprofile.department}}'
+                    department: '{{request.user.userprofile.department}}',
+                    next: Number('{{kw}}')+1,
+                    back: Number('{{kw}}')-1
                 }
             },
         })
