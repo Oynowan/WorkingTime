@@ -13,7 +13,6 @@ def user_profile_ui(request, user):
     user_u = get_object_or_404(User, username=user)
     change_password = PasswordChangeForm(user_u)
     department_choices = user_u.userprofile.department_choices
-    print(user_u.is_staff, request.user.is_staff)
     if user != request.user.username:
         if user_u.is_staff and not request.user.is_staff:
             return redirect('frontpage')

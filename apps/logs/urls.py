@@ -14,5 +14,5 @@ urlpatterns = [
     path('daily/', views.daily_logs, name='daily'),
     #
     # Weekly Logs
-    path('kw/', views.weekly_logs, name='kw')
+    path('kw/', views.weekly_logs, name='kw'),
 ]

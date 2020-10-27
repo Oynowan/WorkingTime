@@ -5,9 +5,20 @@
 
     <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
         <div class="col-10">
-            <div class="form-wrapper">
+            <div class="form-wrapper" id="tips">
+                <h2 style="display: inline-block">Tips: </h2>
+                <div class="select" style="float: right; margin-bottom: 1rem">
+                    <h5 style="display: inline-block">Department: </h5>
+                    <select class="custom-select" v-model="department" style="width: auto; ">
+                    {% for index, choice in request.user.userprofile.department_choices %}
+                        {% if choice != 'Unspecify' %}
+                            <option>{{choice}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
                 <form method="post" action="{% url 'tips_shared' %}">
-                    <h3 style="margin-bottom: 3rem; border-bottom: solid grey 1px; text-align: center">Supervisors Department: {{request.user.userprofile.department}}</h3>
+                    {% csrf_token %}
                     <table class="table bg-light text-dark" style="background: #f5f5f5" >
                         <thead class="thead-dark">
                             <th>Name</th>
@@ -15,10 +26,9 @@
                             <th>Points</th>
                         </thead>
                         <tbody>
-                            {% csrf_token %}
                             {% for employee in employees %}
-                                <tr>
-                                    <td><label>{{ employee.name }}</label></td>
+                                <tr v-if="'{{employee.department}}' === department">
+                                    <td><label>{{employee.name}}</label></td>
                                     <td><label>{{ employee.last_name }}</label></td>
                                     <td><input class="input" style="width: 8rem;" class="input_bar"
                                                type="number" name="points{{employee.id}}" value=0 step=".25" min="0">
@@ -39,3 +49,17 @@
 
 
 {% endblock content %}
+
+{% block script %}
+<script>
+    new Vue({
+        el: '#tips',
+        delimiters: ['[[', ']]'],
+        data () {
+            return {
+                department: '{{ request.user.userprofile.department}}'
+            }
+        },
+    })
+</script>
+{% endblock %}

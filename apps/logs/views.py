@@ -14,7 +14,7 @@ import json
 from ..core.static.decorators import supervisor_member_required, full_registered
 
 
-# WorkingTime Logs
+# WorkingTime Logs to the file and download
 @full_registered
 @supervisor_member_required
 def wt_logs(request, pk):
@@ -33,7 +33,7 @@ def wt_logs(request, pk):
     return render(request, f'{os.path.abspath(f"apps/logs/templates/logs/download/t_logs/wt_logs.txt")}', {'pk': pk})
 
 
-# Users all time Logs
+# Users all time Logs to the file and download
 @full_registered
 @supervisor_member_required
 def u_logs(request, pk):
@@ -96,14 +96,13 @@ def weekly_logs(request):
     # Also the employees
     for time in times:
         if datetime.date(time.start_working).strftime('%V') == kw:
-            if time.users_time.department == request.user.userprofile.department or request.user.userprofile.manager:
-                times_.append(time)
+            times_.append(time)
     for time in times_:
         if time.users_time not in employees and not time.users_time.user.is_staff and time.users_time.confirmed_employee:
             employees.append(time.users_time)
     for employee in employees:
         week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        week_days[0] = f'{employee.name} {employee.last_name}'
+        week_days[0] = employee
         for time in times_:
             if time.users_time == employee:
                 i = 1
@@ -121,8 +120,8 @@ def weekly_logs(request):
         if not user.user.is_staff:
             week_days = ['User', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
             if user not in employees:
-                if user.department == request.user.userprofile.department or request.user.userprofile.manager:
-                    week_days[0] = f'{user.name} {user.last_name}'
+                if user.confirmed_employee:
+                    week_days[0] = user
                     sorted_times.append(week_days)
 
     return render(request, 'logs/calendar_week.html',

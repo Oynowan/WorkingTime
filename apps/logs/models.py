@@ -13,3 +13,6 @@ class WorkingChangeLogs(models.Model):
 
     def __str__(self):
         return self.notes
+
+    class Meta:
+        ordering = ('-changed_at',)

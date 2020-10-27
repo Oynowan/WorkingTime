@@ -34,6 +34,7 @@ def frontpage(request):
     }
     return render(request, 'core/frontpage.html', context)
 
+
 def loginPage(request):
     if request.user.is_authenticated:
         return redirect('frontpage')

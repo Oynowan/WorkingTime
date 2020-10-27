@@ -24,6 +24,8 @@ class UserProfile(models.Model):
         ('F/B Management', 'F/B Management'),
         ('Restaurant - BFST', 'Restaurant - BFST'),
         ('Restaurant - Evening', 'Restaurant - Evening'),
+        ('Bar - Morning', 'Bar - Morning'),
+        ('Bar - Evening', 'Bar - Evening'),
         ('RoomService - Morning', 'RoomService - Morning'),
         ('RoomService - Evening', 'RoomService - Evening'),
         ('Banket - Morning', 'Banket - Morning'),

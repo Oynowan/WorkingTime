@@ -14,7 +14,7 @@ def views_employees(request):
     supervisor = request.user.userprofile
     employees = []
     for employee in all:
-        if employee.confirmed_employee and employee.department == supervisor.department and not employee.user.is_staff:
+        if employee.confirmed_employee and not employee.user.is_staff:
             employees.append(employee)
     return render(request, 'tips/tips.html', {'employees': employees})
 
@@ -28,28 +28,26 @@ def tips_shared(request):
     points = 0
     money = float(request.POST['money'])
     total = 0
-    supervisor = request.user.userprofile
+    employees = []
     for input in request.POST:
         if 'points' in input:
             user = UserProfile.objects.get(pk=int(input[6:]))
             user.points = request.POST[input]
             user.save()
+            employees.append(user)
             points += float(request.POST[input])
     if points != 0:
         avg_money = money / points
     else:
         avg_money = 0
-    employees = UserProfile.objects.all()
-    list_of_employees = []
     for employee in employees:
-        if employee.confirmed_employee and employee.department == supervisor.department and not employee.user.is_staff:
-            list_of_employees.append(employee)
             employee.money = round(float(employee.points) * avg_money, 0)
             employee.points = 0
             employee.save()
             total += employee.money
     context = {
-        'employees': list_of_employees,
+        'employees': employees,
         'rest': money - total,
+        'money': money
     }
     return render(request, 'tips/tips_shared.html', context)
