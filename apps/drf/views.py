@@ -69,13 +69,20 @@ class WorkingTimeDetail(generics.RetrieveUpdateDestroyAPIView):
             else:
                 if request.data['break']:
                     if time[1] > 360:
-                        end = timezone.now() + timedelta(minutes=30)
+                        end = (timezone.now() + timedelta(minutes=30))
                         time = time_count(workingtime.start_working, end)
+                        workingtime.worked_time_seconds = time[1]
+                        workingtime.worked_time = time[0]
                         workingtime.end_working = end
+                    else:
+                        workingtime.end_working = timezone.now()
+                        workingtime.worked_time = time[0]
+                        workingtime.worked_time_seconds = time[1]
                 else:
                     workingtime.end_working = timezone.now()
-                workingtime.worked_time = time[0]
-                workingtime.worked_time_seconds = time[1]
+                    workingtime.worked_time = time[0]
+                    workingtime.worked_time_seconds = time[1]
+
         else:
             # If time was checked by supervisor but not approved
             if request.data['checked_by_supervisor'] and not request.data['is_approved_by_supervisor']:
