@@ -1,4 +1,4 @@
-from django.urls import path
+"""from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -6,3 +6,4 @@ urlpatterns = [
     path('working/', views.working, name='working'),
 
 ]
+"""

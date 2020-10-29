@@ -25,16 +25,16 @@ SETTINGS_PATHS = [os.path.dirname(__file__) ]
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = '$q!$%cafkib*biw5d7uxm4aj#aw3lt6xz4pr_vg$afrh$832gd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['workingsite-app.herokuapp.com']
+ALLOWED_HOSTS = ['workingsite-app.herokuapp.com', '127.0.0.1', '0.0.0.0', '192.168.0.22']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'frontpage'
-LOGOUT_REDIRECT_URL = 'frontpage'
+LOGOUT_REDIRECT_URL = 'base'
 
 # Application definition
 

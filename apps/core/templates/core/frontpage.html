@@ -1,7 +1,7 @@
 {% extends 'core/index.html' %}
 {% load static %}
 {% block navbar %}
-<!-- istzeiten.com --> 
+<!-- istzeiten.com -->
 {% endblock %}
 {% block content %}
 <div class="row" style="margin-top: 5rem; margin-bottom: 5rem">
@@ -15,8 +15,84 @@
                         <h3>Your account wasn't confirmed by Management. Please contact your Manager</h3>
                     {% else %}
                         <h2>Welcome back {{ request.user.userprofile.name}} {{request.user.userprofile.last_name}}</h2><br>
+                <div class="row" style="margin-top: 5rem; margin-bottom: 5rem;">
+            <div class="col-12">
+                <div id="working-time">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            Counting time
+                        </div>
+                    <div v-if="!user.at_work">
+                        <div v-if="!user.worked_today">
+                            <div class="card-body">
+                                    <h3 class="card-title"> Press the button to start counting your work time!</h3>
+                                <a class="btn text-light bg-success" data-toggle="modal" data-target="#workingModal">
+                                    START
+                                </a>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="card-body">
+                                <h3 class="card-title">You have been working today!<br> </h3>
+                                <h4>[[latest_time.worked_time]]</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div v-if="user.at_work && !user.worked_today">
+                            <div class="card-body">
+                            <h3 class="card-title">You are at work! Have a nice shift!</h3>
+                            <h4>If your shift is over, <strong>and only then</strong>, press the red button to stop counting your time.<br>
+                                You can't start working again in the same day!<br>
+                                Check box if you didnt have a break.</h4>
+                            <h5><div style="display: inline-block; border-bottom: solid black 1px">
+                                <br>
+                                <label><strong>Break</strong></label>
+                                <input v-model="break_" type="checkbox">
+                                <h6>(Break is added only if you worked more than 6 hours)</h6>
+
+                            </div></h5>
+                            <button class="btn text-light bg-danger" data-toggle="modal" data-target="#workingModal">STOP</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        Check your worked times below
+                    </div>
+                </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="workingModal" tabindex="-1" role="dialog" aria-labelledby="workingModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="workingModalLabel">Working</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div v-if="!user.at_work && !user.worked_today" class="modal-body">
+                            Are you ready to begin your shift?
+                          </div>
+                            <div v-if="user.at_work && !user.worked_today" class="modal-body">
+                            Are you sure you are done for today?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                              <div v-if="!user.at_work && !user.worked_today">
+                                <button type="button" @click="startWork()" class="btn btn-success">Yes</button>
+                              </div>
+                              <div v-if="user.at_work && !user.worked_today">
+                                <button type="button" @click="stopWork()" class="btn btn-danger">Yes</button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
                     <div id="get_time">
-                            <div v-if="times.length > 0" class="table-responsive" style="min-height: 50rem">
+                            <div v-if="times.length > 0">
                         <h4>You can delete working times by pressing <ion-icon name="trash-outline"></ion-icon>.
                             <br>You can check logs of changes under <ion-icon name="reader-outline"></ion-icon>.
                             <br>Deleted times cant be restored, so be careful.</h4>
@@ -30,6 +106,7 @@
                                 Corrected by Supervisor</div>
                             <span style="display: inline-block"></span>
                                 <div class="container mb-3 mt-3">
+                                    <div class="table-responsive" style="min-height: 50rem">
                                             <table class="table table-striped table-bordered table-sm" style="width: 100%">
                                                 <thead class="thead-dark">
                                                 <tr>
@@ -93,9 +170,10 @@
                                                 </tr>
                                                 </tbody>
                                             </table>
+                                        </div>
                                             </div>
                                             <div style="float: right">
-                                        Total: {{total_time}}
+                                                <h3>Total: {{total_time}}</h3>
                                         </div>
                                         </div>
                                         <div v-else>
@@ -106,16 +184,6 @@
                             </div>
     </div>
                         {% endif %}
-                {% else %}
-                    <h1>Hi there!</h1>
-                    <ul>
-                        <li style="letter-spacing: 2px"><h5>Are you forgetting to write your working time?</h5></li>
-                        <li style="letter-spacing: 2px"><h5>Do you hate to make hundreds of pictures of workingplan?</h5></li>
-                        <li style="letter-spacing: 2px"><h5>Or maybe you are writing it on your mobilephone, which you can loose any time.</h5></li>
-                    </ul><br>
-                    <h3 style="word-spacing: 2px; letter-spacing: 2px">If your answer for any of that questions was <strong>YES</strong>, that website is for you!<br>
-                        By single press button save your working time!<br>
-                    <strong>Sign up</strong> now below and try it for yourself!</h3>
                 {% endif %}
 </div>
 
@@ -146,7 +214,7 @@
                     this.times = []
                     for (i=0;i<response.data.length;i++){
                         if (response.data[i].owner === '{{ request.user.username}}') {
-                            this.times.push(response.data[i])
+                            this.times.push(response.data[i]);
                         }
                     }
                     this.changes_logs(response.data)
@@ -171,9 +239,109 @@
                         'X-CSRFToken': '{{csrf_token}}'
                     },
                 })
-                .then(response => this.getTimes())
+                .then(response => {
+                    location.reload()
+                })
             }
         }
+    }),
+    new Vue ({
+        el: '#working-time',
+        delimiters: ['[[',']]'],
+        data () {
+            return {
+                user: '',
+                latest_time: '',
+                break_: false,
+            }
+        },
+        mounted () {
+            this.getUsersData(parseInt('{{request.user.userprofile.id}}'))
+        },
+        methods: {
+            getUsersData: function(pk) {
+                vm = this
+                axios.get('/api/userprofile/'+pk+'/')
+                .then(response => {
+                    this.user = response.data;
+                    if (response.data.workingtime[0] !== undefined) {
+                        vm.latest_time = this.getTime(response.data.workingtime[0])
+                    }
+                })
+            },
+            startWork: function() {
+                axios.post('/api/workingtime/', {
+                    'start_working': new Date(),
+                    'end_working': new Date(),
+                    'start_working_corrected': new Date(),
+                    'end_working_corrected': new Date(),
+                    'worked_time_seconds': 0,
+                    'corrected_by': '',
+                    'corrected_at': new Date()
+                }, {
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => {
+                    this.userAtWork('{{request.user.userprofile.id}}')
+                    location.reload()
+                })
+                },
+            stopWork: function () {
+                this.getTime(this.user.workingtime[0])
+                axios.put('/api/workingtime/'+this.user.workingtime[0]+'/', {
+                    'ending_work': true,
+                    'break': this.break_
+                }, {
+                    headers: {
+                        'Type-Content': 'application/json',
+                        'X-CSRFToken': '{{csrf_token}}'
+                    }
+                })
+                .then(response => {
+                    this.userNotAtWork(this.user.id);
+                    location.reload()
+                    return response.data
+                })
+            },
+            userAtWork: function (id) {
+                axios.put('/api/userprofile/'+id+'/', {
+                    'at_work': true,
+                }, {
+                    method:'PUT',
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => {
+                    this.getUsersData('{{request.user.userprofile.id}}');
+
+                })
+            },
+            userNotAtWork: function (id) {
+                axios.put('/api/userprofile/'+id+'/', {
+                    'at_work': false,
+                    'worked_today': true
+                }, {
+                    method:'PUT',
+                    headers: {
+                        'X-CSRFToken': '{{csrf_token}}',
+                        'Content-Type': 'application/json',
+                        'credentials': 'same-origin'
+                    }
+                })
+                .then(response => this.getUsersData('{{request.user.userprofile.id}}'))
+            },
+            getTime: function (id) {
+                axios.get('/api/workingtime/'+id+'/')
+                .then(response => this.latest_time = response.data )
+            }
+        },
     })
 </script>
 {% endblock %}

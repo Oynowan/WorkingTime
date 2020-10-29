@@ -2,16 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from ..workingtime.models import WorkingTime
 from .static.scripts import time_count
 from .static.scripts import check_registered
-from ..userprofile.models import UserProfile
+from ..userprofile.models import UserProfile, User
 from .forms import CreateUserForm
 from django.db.models import Q
 from django.views.generic import ListView
-from .static.decorators import unauthenticated_user
+from .static.decorators import unauthenticated_user, full_registered
+from django.utils import timezone
+from datetime import timedelta, datetime
 
 
+@unauthenticated_user
+def basepage(request):
+    return render(request, 'core/base.html')
+
+
+@login_required
 def frontpage(request):
     if request.user.is_authenticated:
         if not request.user.userprofile.fully_registered:
@@ -32,6 +41,23 @@ def frontpage(request):
         'work_dates': work_dates,
         'total_time': total_time_
     }
+
+    p = User.objects.get(pk=request.user.id)
+    time = p.userprofile.workingtime.first()
+
+    if not time:
+        user = UserProfile.objects.get(user=p)
+        user.worked_today = False
+        user.at_work = False
+        user.save()
+        return render(request, 'core/frontpage.html')
+    today = datetime.strftime(timezone.now(), '%Y-%m-%d')
+    last_day = datetime.strftime((time.start_working + timedelta(days=1)), '%Y-%m-%d')
+    print(today, last_day)
+    if today >= last_day:
+        user = UserProfile.objects.get(user=p)
+        user.worked_today = False
+        user.save()
     return render(request, 'core/frontpage.html', context)
 
 

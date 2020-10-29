@@ -14,7 +14,6 @@ from ..core.static.decorators import full_registered
 @login_required
 @full_registered
 def working(request):
-    started = 0
     p = User.objects.get(pk=request.user.id)
     time = p.userprofile.workingtime.first()
 
@@ -23,28 +22,9 @@ def working(request):
         user.worked_today = False
         user.at_work = False
         user.save()
-        return render(request, 'workingtime/working.html')
-    print(timezone.now().day, time.start_working.day)
+        return render(request, 'core/frontpage.html')
     if timezone.now().day - time.start_working.day > 0:
         user = UserProfile.objects.get(user=p)
         user.worked_today = False
         user.save()
-    worked_time = time.worked_time
-    worked = time.start_working.day != timezone.now().day
-    start = time.start_working
-    context = {
-        'start': start,
-        'worked': worked,
-        'worked_time': worked_time,
-        'started': started
-    }
-    if p.userprofile.at_work:
-        started = 1
-        context = {
-            'start': start,
-            'worked': worked,
-            'worked_time': worked_time,
-            'started': started
-        }
-        return render(request, 'workingtime/working.html', context)
-    return render(request, 'workingtime/working.html', context)
+    return render(request, 'core/frontpage.html')

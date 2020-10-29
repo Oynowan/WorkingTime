@@ -30,7 +30,7 @@
 
     </div>
     <nav  id="nav-burger" class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
-        <a class="navbar-brand" href="{% url 'frontpage' %}"><img src="{% static 'img/SO-logo.jpg' %}"/></a>
+        <a class="navbar-brand" href="{% url 'base' %}"><img src="{% static 'img/SO-logo.jpg' %}"/></a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#collapse_target" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -39,20 +39,17 @@
         <ul class="navbar-nav">
             {% if request.user.userprofile.at_work %}
             <li class="nav-item" style="margin-right: 1rem">
-                <span class="navbar-text text-light">Currently at work</span>
+                <span class="text-warning">Currently at work</span>
             </li>
             {% endif %}
-            <li class="nav-item dropdown">
-                 <hr class="dropdown-divider">
-                <div class="nav-link dropdown-toggle" data-toggle="dropdown" data-target="dropdown_target">
+        </ul>
+            {% if request.user.userprofile.supervisor %}
+            <div class="nav-item dropdown" style="margin-bottom: .5rem">
+                <div class="nav-link dropdown-toggle text-light" data-toggle="dropdown" data-target="dropdown_target">
                     Menu
                     <span class="caret"></span>
                 </div>
                 <div class="dropdown-menu" aria-labelledby="dropdown_target">
-                    <a class="dropdown-item" href="{% url 'working' %}">
-                        Work
-                    </a>
-                    {% if request.user.userprofile.supervisor %}
                     <a class="dropdown-item" href="{% url 'views_employees' %}">
                         Tips
                     </a>
@@ -72,21 +69,22 @@
                     <a class="dropdown-item" href="{% url 'to_confirm_time' %}">
                         Time([[to_confirm_time]])
                     </a>
-                    {%endif%}
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'user_profile_ui' request.user.username %}">
+                </div>
+            </div>
+            {%endif%}
+            <form method="get" action="{% url 'list_of_users' %}" class="form-inline my-2 my-md-0 ml-auto">
+                <input name="q" class="form-control mr-sm-2"  style="margin-bottom: .5rem" type="search" placeholder="Search employee" aria-label="Search">
+            </form>
+            <div class="nav-item" style="margin-right: .5rem; margin-bottom: .5rem; display: inline-block">
+                <a class=" btn bg-warning text-dark" href="{% url 'user_profile_ui' request.user.username %}">
                         Profile
                     </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'logout' %}">
+            </div>
+            <div class="nav-item"  style="margin-bottom: .5rem; float: right; display: inline-block" >
+                <a class="btn bg-danger text-light" href="{% url 'logout' %}">
                         Logout
                     </a>
-                </div>
-            </li>
-        </ul>
-            <form method="get" action="{% url 'list_of_users' %}" class="form-inline my-2 my-md-0 ml-auto">
-                <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search employee" aria-label="Search">
-            </form>
+                    </div>
             {% else %}
             <ul class="navbar-nav ml-auto">
                 <hr class="dropdown-divider">

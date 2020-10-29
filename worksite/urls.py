@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('apps.core.urls')),
     #
     # WorkingTime APP
-    path('', include('apps.workingtime.urls')),
+    # path('', include('apps.workingtime.urls')),
     #
     # Tips APP
     path('', include('apps.tips.urls')),

@@ -1,4 +1,4 @@
-import json
+"""import json
 
 from django.shortcuts import render
 from django.utils import timezone
@@ -9,9 +9,11 @@ from .models import WorkingTime
 from ..userprofile.models import User, UserProfile
 
 from ..core.static.scripts import time_count
+from ..core.static.decorators import full_registered
 
 
 @login_required()
+@full_registered
 def api_start_working(request):
     data = json.loads(request.body)
     print('im in api_start_working')
@@ -32,6 +34,7 @@ def api_start_working(request):
 
 
 @login_required()
+@full_registered
 def api_end_working(request):
     print('im in api_end_working')
     data = json.loads(request.body)
@@ -60,3 +63,4 @@ def api_end_working(request):
 
     return JsonResponse({'success': True})
 
+"""

@@ -1,10 +1,11 @@
-from django.urls import path, include
+from django.urls import path
 from django.contrib.auth import views as views_
 from . import views
 from . import api
 
 urlpatterns = [
-    path('', views.frontpage, name='frontpage'),
+    path('', views.basepage, name='base'),
+    path('main/', views.frontpage, name='frontpage'),
     path('signup/', views.signup, name='signup'),
     path('logout/', views_.LogoutView.as_view(), name='logout'),
     path('login/', views.loginPage, name='login'),

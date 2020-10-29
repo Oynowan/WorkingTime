@@ -20,7 +20,7 @@ workingtime.start_working + timedelta(hours=10)
 ```
 to end_working and employee is getting information that he worked more than 10h which is not allowed(supervisors can change time to how long they want, just not into the past).
 Only time when employee can save over 10h working time, is when he worked for example 9h 59min and checked **BREAK** box(if person didn't have a break) which is adding 30min to your end time.
-Then end_working time is beeing subtracted from start_working and delta_seconds converted to minutes. To DB is saved a string of how long you have been working and integer of minutes which are later used to show total time of work.
+Then end_working time is being subtracted from start_working and delta_seconds converted to minutes. To DB is saved a string of how long you have been working and integer of minutes which are later used to show total time of work.
 
 - You can't start your work on the same day more than once, except if you delete time from that same day.
 - Any new time has to be confirmed or corrected by any supervisor
